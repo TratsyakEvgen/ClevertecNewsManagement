@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.news.dto.request.Filter;
 import ru.clevertec.news.entity.News;
 
-public interface NewsEntityService {
+public interface CacheableNewsService {
+    void evict(News news);
+
     News save(News news);
 
     Page<News> findAll(Pageable pageable, Filter filter);

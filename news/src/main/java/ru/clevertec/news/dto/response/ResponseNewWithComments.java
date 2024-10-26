@@ -5,6 +5,6 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ResponseNewWithComments extends ResponseNews{
+public class ResponseNewWithComments extends ResponseNews {
     private ResponsePage<ResponseComment> comments;
 }

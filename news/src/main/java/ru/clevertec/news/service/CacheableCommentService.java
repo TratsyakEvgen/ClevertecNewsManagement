@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.news.dto.request.Filter;
 import ru.clevertec.news.entity.Comment;
 
-public interface CommentEntityService {
+public interface CacheableCommentService {
+    void evict(Comment comment);
+
     void delete(long newsId, long commentId);
 
     Comment save(Comment comment);
