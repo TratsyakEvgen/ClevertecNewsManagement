@@ -22,3 +22,6 @@ logging:
         transaction: debug
         orm:
           jpa: debug
+cache:
+  algorithm: LFU
+  capacity: 100

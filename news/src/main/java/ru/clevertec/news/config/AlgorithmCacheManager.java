@@ -13,24 +13,26 @@ import java.util.concurrent.ConcurrentMap;
 
 @RequiredArgsConstructor
 public class AlgorithmCacheManager implements CacheManager {
-    private final String algorithm;
-    private final int capacity;
+    private final ConfigCacheManager config;
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
-    private final Map<String, CacheSupplier<Integer, String, Cache>> algorithmCahceSeupplierMap = new HashMap<>();
+    private final Map<String, CacheSupplier<Integer, String, Cache>> algorithmCahceSupplierMap = new HashMap<>();
 
     {
-        algorithmCahceSeupplierMap.put("LRU", LRUCache::new);
-        algorithmCahceSeupplierMap.put("LFU", LFUCache::new);
+        algorithmCahceSupplierMap.put("LRU", LRUCache::new);
+        algorithmCahceSupplierMap.put("LFU", LFUCache::new);
     }
 
     @Override
     public Cache getCache(String name) {
-        return Optional.ofNullable(cacheMap.get(name))
-                .orElseGet(() ->
-                        Optional.ofNullable(algorithmCahceSeupplierMap.get(algorithm))
-                                .map(cacheSupplier -> cacheSupplier.get(capacity, name))
-                                .orElseThrow()
-                );
+        Cache cache = cacheMap.get(name);
+        if (cache == null) {
+            String algorithm = config.getAlgorithm();
+            cache = Optional.ofNullable(algorithmCahceSupplierMap.get(algorithm))
+                    .map(cacheSupplier -> cacheSupplier.get(config.getCapacity(), name))
+                    .orElseThrow(() -> new IncorrectAlgorithmException(algorithm + " is not support"));
+            cacheMap.put(name, cache);
+        }
+        return cache;
     }
 
     @Override
