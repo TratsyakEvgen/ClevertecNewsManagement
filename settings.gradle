@@ -1,2 +1,6 @@
 rootProject.name = 'ClevertecNewsManagement'
+include 'news-api'
+include 'algorithm-cache'
+include 'exception-handler'
+include 'exception-handler-starter'
 
