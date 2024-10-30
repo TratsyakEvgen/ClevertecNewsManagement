@@ -17,8 +17,6 @@ public interface NewsMapper {
     @Mapping(target = "comments", ignore = true)
     ResponseNewWithComments toResponseNewWithComments(News news);
 
-    Page<ResponseNews> toResponsePage(Page<News> newsPage);
-
     News toNews(CreateNews createNews);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

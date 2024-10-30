@@ -55,7 +55,7 @@ public class DefaultCommentService implements CommentService {
 
     @Override
     public Page<ResponseComment> get(long newsId, Pageable pageable, SearchText searchText) {
-        Page<Comment> comments = cacheableCommentService.findAll(newsId, pageable, searchText);
-        return commentMapper.toResponsePage(comments);
+        Page<Comment> commentPage = cacheableCommentService.findAll(newsId, pageable, searchText);
+        return commentPage.map(commentMapper::toResponseComment);
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class ResponseComment {
     private long id;
     private String username;
-    private LocalDateTime createAtDate;
+    private LocalDateTime date;
     private String text;
     private long newsId;
 }

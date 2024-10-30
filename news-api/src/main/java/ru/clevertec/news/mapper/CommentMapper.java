@@ -12,7 +12,6 @@ public interface CommentMapper {
     @Mapping(target = "newsId", source = "news.id")
     ResponseComment toResponseComment(Comment comment);
 
-    Page<ResponseComment> toResponsePage(Page<Comment> page);
 
     Comment toComment(CreateComment createComment);
 

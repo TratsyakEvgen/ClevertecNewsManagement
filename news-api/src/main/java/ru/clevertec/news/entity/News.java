@@ -28,6 +28,4 @@ public class News {
     private String title;
     @NotBlank(message = "Text must not be blank")
     private String text;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "news")
-    private List<Comment> comments;
 }

@@ -3,4 +3,5 @@ include 'news-api'
 include 'algorithm-cache'
 include 'exception-handler'
 include 'exception-handler-starter'
+include 'user-api'
 

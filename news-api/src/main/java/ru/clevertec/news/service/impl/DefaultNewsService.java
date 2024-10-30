@@ -40,7 +40,7 @@ public class DefaultNewsService implements NewsService {
     @Override
     public Page<ResponseNews> getAll(Pageable pageable, SearchText searchText) {
         Page<News> newsPage = cacheableNewsService.findAll(pageable, searchText);
-        return newsMapper.toResponsePage(newsPage);
+        return newsPage.map(newsMapper::toResponseNews);
     }
 
     @Override
