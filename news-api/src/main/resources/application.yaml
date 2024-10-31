@@ -16,6 +16,12 @@ spring:
   data:
     redis:
       port: 6379
+  cloud:
+    openfeign:
+      client:
+        config:
+          userClient:
+            url: https://localhost:8081/users/
 server:
   port: 8080
 logging:

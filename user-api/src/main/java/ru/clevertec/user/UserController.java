@@ -15,22 +15,7 @@ import java.util.Date;
 public class UserController {
     @GetMapping
     public String get() {
-        String jwtSecret = "4261656C64756E67";
-
-        byte[] keyStrict = Arrays.copyOf(jwtSecret.getBytes(), 256);
-      //  byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        SecretKey secretKey = Keys.hmacShaKeyFor(keyStrict);
-        System.out.println(secretKey.getAlgorithm());
-
-//        String keyString = "стоfdvfdfgdfgdfffgfgdfgdfgf";
-//
-//        SecretKey secretKeySpec = new SecretKeySpec(keyStrict, "HS256");
-
-        return Jwts.builder()
-//                .expiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
-                .signWith(secretKey)
-                .subject("user")
-                .compact();
+        return null;
 
     }
 }

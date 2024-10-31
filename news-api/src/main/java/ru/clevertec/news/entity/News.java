@@ -29,6 +29,6 @@ public class News implements Serializable {
     private String title;
     @NotBlank(message = "Text must not be blank")
     private String text;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "news")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "news")
     private List<Comment> comments;
 }

@@ -7,8 +7,12 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.entity.Comment;
 
+import java.util.List;
+
 public interface CacheableCommentService {
     void evict(@Valid Comment comment);
+
+    void evict(@NotNull(message = "List comments must be not null") List<Comment> comments);
 
     void delete(long newsId, long commentId);
 

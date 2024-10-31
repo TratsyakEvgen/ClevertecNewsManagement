@@ -9,7 +9,6 @@ import ru.clevertec.cache.manager.ConfigurationCacheManager;
 
 
 //@Configuration
-//@EnableCaching
 public class AlgorithmCacheConfiguration {
     @Bean
     @ConfigurationProperties(prefix = "cache")

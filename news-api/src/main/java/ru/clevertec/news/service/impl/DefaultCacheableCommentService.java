@@ -16,6 +16,8 @@ import ru.clevertec.news.entity.Comment;
 import ru.clevertec.news.repository.CommentRepository;
 import ru.clevertec.news.service.CacheableCommentService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Validated
@@ -26,6 +28,14 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     @CacheEvict(value = "comments", key = "#comment.id")
     public void evict(Comment comment) {
+    }
+
+    @Override
+    public void evict(List<Comment> comments) {
+        Cache cache = cacheManager.getCache("comments");
+        if (cache != null) {
+            comments.forEach(comment -> cache.evict(comment.getId()));
+        }
     }
 
     @Override
