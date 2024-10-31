@@ -26,6 +26,7 @@ repositories {
 dependencies {
     implementation project(':exception-handler-starter')
     implementation project(':algorithm-cache')
+    implementation project(':logging-starter')
     implementation "org.mapstruct:mapstruct:1.6.2"
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"

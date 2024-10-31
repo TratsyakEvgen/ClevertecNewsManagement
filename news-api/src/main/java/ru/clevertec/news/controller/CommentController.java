@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import ru.clevertec.logging.annotation.Log;
 import ru.clevertec.news.dto.request.CreateComment;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.dto.request.UpdateComment;
@@ -16,30 +17,31 @@ import ru.clevertec.news.service.CommentService;
 public class CommentController {
     private final CommentService commentService;
 
+    @Log
     @GetMapping("/{commentId}")
-    public ResponseComment get(@PathVariable long newsId, @PathVariable long commentId) {
+    public ResponseComment getComment(@PathVariable long newsId, @PathVariable long commentId) {
         return commentService.get(newsId, commentId);
     }
-
+    @Log
     @GetMapping
-    public Page<ResponseComment> search(@PathVariable long newsId, Pageable pageable, SearchText searchText) {
+    public Page<ResponseComment> getAllComments(@PathVariable long newsId, Pageable pageable, SearchText searchText) {
         return commentService.get(newsId, pageable, searchText);
     }
-
+    @Log
     @PostMapping
-    public ResponseComment create(@PathVariable long newsId, @RequestBody CreateComment createComment) {
+    public ResponseComment createComment(@PathVariable long newsId, @RequestBody CreateComment createComment) {
         return commentService.create(newsId, createComment);
     }
-
+    @Log
     @PatchMapping("/{commentId}")
-    public ResponseComment update(@PathVariable long newsId,
+    public ResponseComment updateComment(@PathVariable long newsId,
                                   @PathVariable long commentId,
                                   @RequestBody UpdateComment updateComment) {
         return commentService.update(newsId, commentId, updateComment);
     }
-
+    @Log
     @DeleteMapping("/{commentId}")
-    public void delete(@PathVariable long newsId, @PathVariable long commentId) {
+    public void deleteComment(@PathVariable long newsId, @PathVariable long commentId) {
         commentService.delete(newsId, commentId);
     }
 

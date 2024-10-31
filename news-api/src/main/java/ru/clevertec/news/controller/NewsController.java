@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import ru.clevertec.logging.annotation.Log;
 import ru.clevertec.news.dto.request.CreateNews;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.dto.request.UpdateNews;
@@ -18,28 +19,29 @@ import ru.clevertec.news.service.NewsService;
 public class NewsController {
     private final NewsService newsService;
 
+    @Log
     @GetMapping
-    public Page<ResponseNews> getAll(Pageable pageable, SearchText searchText) {
+    public Page<ResponseNews> getAllNews(Pageable pageable, SearchText searchText) {
         return newsService.getAll(pageable, searchText);
     }
-
+    @Log
     @GetMapping("/{id}")
-    public ResponseNewWithComments get(@PathVariable long id, Pageable pageable) {
+    public ResponseNewWithComments getNews(@PathVariable long id, Pageable pageable) {
         return newsService.get(id, pageable);
     }
-
+    @Log
     @PostMapping
-    public ResponseNews create(@RequestBody CreateNews createNews) {
+    public ResponseNews createNews(@RequestBody CreateNews createNews) {
         return newsService.create(createNews);
     }
-
+    @Log
     @PatchMapping("/{id}")
-    public ResponseNews update(@RequestBody UpdateNews updateNews, @PathVariable long id) {
+    public ResponseNews updateNews(@RequestBody UpdateNews updateNews, @PathVariable long id) {
         return newsService.update(updateNews, id);
     }
-
+    @Log
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public void deleteNews(@PathVariable long id) {
         newsService.delete(id);
     }
 

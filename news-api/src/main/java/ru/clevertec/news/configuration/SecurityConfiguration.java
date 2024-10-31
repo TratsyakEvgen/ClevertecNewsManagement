@@ -1,11 +1,7 @@
-
 package ru.clevertec.news.configuration;
 
-import io.jsonwebtoken.security.Keys;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,28 +12,13 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.clevertec.cache.manager.AlgorithmCacheManager;
-import ru.clevertec.cache.manager.ConfigurationCacheManager;
+import ru.clevertec.news.service.security.SecretKeyGenerator;
 import ru.clevertec.news.service.security.SecurityService;
 
 import javax.crypto.SecretKey;
-import java.util.Arrays;
 
-
-@org.springframework.context.annotation.Configuration
-@EnableCaching
-public class Configuration {
-    @Bean
-    @ConfigurationProperties(prefix = "cache")
-    public ConfigurationCacheManager configCacheManager() {
-        return new ConfigurationCacheManager();
-    }
-
-    @Bean
-    public CacheManager cacheManager(ConfigurationCacheManager config) {
-        return new AlgorithmCacheManager(config);
-    }
-
+@Configuration
+public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            JwtDecoder decoder,
@@ -71,11 +52,10 @@ public class Configuration {
         return jwtAuthenticationConverter;
     }
 
+
     @Bean
-    public JwtDecoder jwtDecoder() {
-        String jwtSecret = "4261656C64756E67";
-        byte[] keyStrict = Arrays.copyOf(jwtSecret.getBytes(), 256);
-        SecretKey secretKey = Keys.hmacShaKeyFor(keyStrict);
-        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS512).build();
+    public JwtDecoder jwtDecoder(SecretKeyGenerator secretKeyGenerator) {
+        SecretKey secretKey = secretKeyGenerator.generate();
+        return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
     }
 }
