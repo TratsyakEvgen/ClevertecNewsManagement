@@ -3,15 +3,13 @@ package ru.clevertec.news.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import ru.clevertec.cache.manager.AlgorithmCacheManager;
 import ru.clevertec.cache.manager.ConfigurationCacheManager;
 
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class AlgorithmCacheConfiguration {
     @Bean
     @ConfigurationProperties(prefix = "cache")
