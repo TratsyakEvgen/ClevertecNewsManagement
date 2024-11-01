@@ -1,7 +1,6 @@
 package ru.clevertec.cache.cache;
 
 import org.springframework.cache.support.SimpleValueWrapper;
-import ru.clevertec.cache.manager.AbstractAlgorithmCache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

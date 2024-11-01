@@ -1,4 +1,4 @@
-package ru.clevertec.cache.manager;
+package ru.clevertec.cache.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;

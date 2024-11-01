@@ -1,16 +1,24 @@
 spring:
   application:
-    name: user
-#  jpa:
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: validate
-#    open-in-view: false
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/news
-#    username: postgres
-#    password: Traktaryst
-#    driver-class-name: org.postgresql.Driver
+    name: users
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/users
+    username: postgres
+    password: Traktaryst
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
 server:
   port: 8081
-
+logging:
+  level:
+    org:
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug
