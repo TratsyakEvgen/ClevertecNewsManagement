@@ -12,6 +12,9 @@ import ru.clevertec.news.service.security.exception.SecurityServiceException;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Сервис авторизации для комментариев
+ */
 @Component
 @RequiredArgsConstructor
 public class CommentSecurityService extends AbstractSecurityService {
@@ -19,11 +22,19 @@ public class CommentSecurityService extends AbstractSecurityService {
 
     {
         roleDecisionMap.put("ROLE_ADMIN", (authentication, context) -> true);
-        roleDecisionMap.put("ROLE_SUBSCRIBER", this::isGranted);
+        roleDecisionMap.put("ROLE_SUBSCRIBER", this::isAuthorized);
     }
 
+    /**
+     * Сопоставляет имя пользователя и автора комментария
+     *
+     * @param authentication данные аутентификации
+     * @param context        контекст запроса
+     * @return решение об авторизации
+     * @throws SecurityServiceException если в пути запроса отсутствует newsId или commentId
+     */
     @Override
-    protected boolean isGranted(Authentication authentication, RequestAuthorizationContext context) {
+    protected boolean isAuthorized(Authentication authentication, RequestAuthorizationContext context) {
         Map<String, String> variables = context.getVariables();
         long newsId = Optional.ofNullable(variables.get("newsId"))
                 .map(Long::parseLong)
@@ -34,7 +45,7 @@ public class CommentSecurityService extends AbstractSecurityService {
                 .map(Long::parseLong)
                 .orElseThrow(() ->
                         new SecurityServiceException("Not found comment id in " + context.getRequest().getRequestURI()));
-        Comment comment = commentService.get(newsId, commentId);
+        Comment comment = commentService.find(newsId, commentId);
         return comment.getUsername().equals(authentication.getName());
     }
 }

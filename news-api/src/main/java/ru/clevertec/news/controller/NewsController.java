@@ -39,7 +39,7 @@ public class NewsController {
     @GetMapping
     public Page<ResponseNews> getAllNews(@ParameterObject Pageable pageable,
                                          @ParameterObject SearchText searchText) {
-        return newsService.getAll(pageable, searchText);
+        return newsService.get(pageable, searchText);
     }
 
     @Operation(summary = "Get news", tags = "news")

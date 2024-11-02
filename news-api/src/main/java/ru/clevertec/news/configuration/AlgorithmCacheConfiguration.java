@@ -1,4 +1,3 @@
-
 package ru.clevertec.news.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

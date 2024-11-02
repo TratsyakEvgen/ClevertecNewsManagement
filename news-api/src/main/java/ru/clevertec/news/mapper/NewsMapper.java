@@ -1,7 +1,6 @@
 package ru.clevertec.news.mapper;
 
 import org.mapstruct.*;
-import org.springframework.data.domain.Page;
 import ru.clevertec.news.dto.request.CreateNews;
 import ru.clevertec.news.dto.request.UpdateNews;
 import ru.clevertec.news.dto.response.ResponseNewWithComments;

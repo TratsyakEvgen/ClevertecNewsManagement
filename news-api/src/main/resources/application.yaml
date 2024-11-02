@@ -37,3 +37,5 @@ logging:
 cache:
   algorithm: LFU
   capacity: 100
+jwt:
+  expiry-time: 600000
