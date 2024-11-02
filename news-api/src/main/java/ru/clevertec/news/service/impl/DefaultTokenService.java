@@ -25,13 +25,14 @@ public class DefaultTokenService implements TokenService {
     @Override
     public ResponseToken createToken(AuthenticationData authenticationData) {
         SecretKey secretKey = secretKeyGenerator.generate();
-        ResponseUser user = userClient.getUser(authenticationData.getUsername(), authenticationData.getPassword());
+        String username = authenticationData.getUsername();
+        ResponseUser user = userClient.getUser(username, authenticationData.getPassword());
 
         String token = Jwts.builder()
 //                .expiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000))
                 .signWith(secretKey)
-                .subject("user")
-                .claim("scope", user.getRole())
+                .subject(username)
+                .claim("scope", user.getRoleName())
                 .compact();
         return new ResponseToken(token);
     }

@@ -1,8 +1,12 @@
 package ru.clevertec.exception.handler.starter.advice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +21,9 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final ObjectMapper objectMapper;
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseError processConstraintViolationException(HttpServletRequest request, ConstraintViolationException e) {
@@ -46,6 +52,16 @@ public class GlobalExceptionHandler {
         log.warn("Incorrect path", e);
         return new ResponseError().setStatus(HttpStatus.BAD_REQUEST.value())
                 .setError(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .setPath(request.getRequestURI());
+    }
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError processFeignException(HttpServletRequest request, FeignException.NotFound e) throws JsonProcessingException {
+        log.warn("Incorrect path", e);
+        ResponseError feignResponseError = objectMapper.readValue(e.contentUTF8(), ResponseError.class);
+        return new ResponseError().setStatus(HttpStatus.NOT_FOUND.value())
+                .setError(feignResponseError.getError())
                 .setPath(request.getRequestURI());
     }
 

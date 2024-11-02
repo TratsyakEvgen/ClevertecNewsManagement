@@ -21,7 +21,10 @@ spring:
       client:
         config:
           userClient:
-            url: https://localhost:8081/users/
+            url: http://localhost:8081/users/
+springdoc:
+  default-produces-media-type: application/json
+  override-with-generic-response: false
 server:
   port: 8080
 logging:
