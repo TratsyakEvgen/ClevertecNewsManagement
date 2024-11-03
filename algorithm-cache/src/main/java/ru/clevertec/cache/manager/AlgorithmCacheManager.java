@@ -14,6 +14,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Кэш менеджер
+ */
 @RequiredArgsConstructor
 public class AlgorithmCacheManager implements CacheManager {
     private final ConfigurationCacheManager config;
@@ -25,6 +28,13 @@ public class AlgorithmCacheManager implements CacheManager {
         algorithmCahceSupplierMap.put("LFU", LFUCache::new);
     }
 
+    /**
+     * Предоставляет кэш по идентификатору.
+     * Если кэш не существует, то создается новый
+     *
+     * @param name идентификатор кэша
+     * @return кэш
+     */
     @Override
     public Cache getCache(String name) {
         Cache cache = cacheMap.get(name);
@@ -38,6 +48,9 @@ public class AlgorithmCacheManager implements CacheManager {
         return cache;
     }
 
+    /**
+     * @return коллекция идентификаторов кэшей
+     */
     @Override
     public Collection<String> getCacheNames() {
         return cacheMap.keySet();

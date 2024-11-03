@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import ru.clevertec.news.dto.request.CreateComment;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.dto.request.UpdateComment;
@@ -29,7 +30,8 @@ public interface CommentService {
      * @param commentId     id комментария
      * @param updateComment обновляемая информация
      * @return комментарий
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и updateComment не валиден
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и updateComment не валиден
      */
     ResponseComment update(long newsId, long commentId, @Valid UpdateComment updateComment);
 
@@ -39,7 +41,8 @@ public interface CommentService {
      * @param newsId        id новости
      * @param createComment информация о создании комментария
      * @return комментарий
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и createComment не валиден
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и createComment не валиден
      */
     ResponseComment create(long newsId, @Valid CreateComment createComment);
 
@@ -59,7 +62,8 @@ public interface CommentService {
      * @param pageable   информация об пагинации
      * @param searchText искомый текст
      * @return страница комментариев
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и Pageable равен null или SearchText не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и Pageable равен null или SearchText не валидный
      */
     Page<ResponseComment> get(long newsId, @NotNull(message = "Pageable must be not null") Pageable pageable,
                               @Valid SearchText searchText);

@@ -6,6 +6,15 @@ import ru.clevertec.user.entity.RoleName;
 
 import java.util.Optional;
 
+/**
+ * Репозиторий ролей
+ */
 public interface RoleRepository extends JpaRepository<Role, Long> {
+    /**
+     * Предоставляет роль по ее названию
+     *
+     * @param roleName наименование роли
+     * @return роль
+     */
     Optional<Role> findByRoleName(RoleName roleName);
 }

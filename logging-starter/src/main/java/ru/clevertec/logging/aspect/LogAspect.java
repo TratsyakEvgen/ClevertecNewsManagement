@@ -9,10 +9,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+/**
+ * Аспект логирования
+ */
 @Aspect
 @Component
 @Slf4j
 public class LogAspect {
+    /**
+     * Логирование входящих параметров метода и результата выполнения.
+     * Метод должен быть аннотирован {@link ru.clevertec.logging.annotation.Log}
+     */
     @Around(value = "logMethods()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
@@ -22,6 +29,10 @@ public class LogAspect {
         log.info("<< {}() - {}", methodName, result);
         return result;
     }
+
+    /**
+     * Точка применения аспекта {@link ru.clevertec.logging.annotation.Log}
+     */
     @Pointcut("@annotation(ru.clevertec.logging.annotation.Log)")
     private void logMethods() {
     }

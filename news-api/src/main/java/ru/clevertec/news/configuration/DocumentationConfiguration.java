@@ -7,6 +7,9 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Конфигурация Springdoc
+ */
 @Configuration
 @SecurityScheme(
         name = "Bearer Authentication",
@@ -16,6 +19,9 @@ import org.springframework.context.annotation.Configuration;
 )
 public class DocumentationConfiguration {
 
+    /**
+     * @return добавляет заголовок в документацию
+     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

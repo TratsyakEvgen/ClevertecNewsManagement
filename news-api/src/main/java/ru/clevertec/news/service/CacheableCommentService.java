@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.entity.Comment;
 
@@ -19,7 +20,8 @@ public interface CacheableCommentService {
      * Удаляет комментарий из кэша
      *
      * @param comment удаляемый комментарий
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и комментарий не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует (присутствует {@link Validated}
+     *                                      и комментарий не валидный
      */
     void evict(@Valid Comment comment);
 
@@ -27,7 +29,8 @@ public interface CacheableCommentService {
      * Удаляет комментарии из кэша
      *
      * @param comments удаляемый список комментариев
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и список равен null
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и список равен null
      */
     void evict(@NotNull(message = "List comments must be not null") List<Comment> comments);
 
@@ -43,7 +46,8 @@ public interface CacheableCommentService {
      * Сохраняет комментарий
      *
      * @param comment сохраняемый комментарий
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и комментарий не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и комментарий не валидный
      */
     void save(@Valid Comment comment);
 
@@ -64,8 +68,10 @@ public interface CacheableCommentService {
      * @param pageable   информация об пагинации
      * @param searchText искомый текст
      * @return страница комментариев
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и Pageable равен null или SearchText не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     *                                      и Pageable равен null или SearchText не валидный
      */
     @org.jetbrains.annotations.NotNull
-    Page<Comment> findAll(long newsId, @NotNull(message = "Pageable must be not null") Pageable pageable, @Valid SearchText searchText);
+    Page<Comment> findAll(long newsId, @NotNull(message = "Pageable must be not null") Pageable pageable,
+                          @Valid SearchText searchText);
 }

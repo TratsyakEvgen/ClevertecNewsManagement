@@ -13,12 +13,21 @@ import ru.clevertec.news.dto.request.AuthenticationData;
 import ru.clevertec.news.dto.response.ResponseToken;
 import ru.clevertec.news.service.TokenService;
 
+/**
+ * Контроллер токенов доступа
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/tokens")
 public class TokenController {
     private final TokenService tokenService;
 
+    /**
+     * Создание токена доступа
+     *
+     * @param authenticationData данные аутентификации
+     * @return токен доступа
+     */
     @Operation(summary = "Create new JWT token", tags = "tokens")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),

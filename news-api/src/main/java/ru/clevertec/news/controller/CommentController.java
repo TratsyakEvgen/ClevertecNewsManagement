@@ -20,6 +20,9 @@ import ru.clevertec.news.dto.request.UpdateComment;
 import ru.clevertec.news.dto.response.ResponseComment;
 import ru.clevertec.news.service.CommentService;
 
+/**
+ * Контроллер новостей
+ */
 @ApiResponses(value = {
         @ApiResponse(responseCode = "400", description = "Incorrect path",
                 content = @Content(schema = @Schema(implementation = ResponseError.class))),
@@ -32,6 +35,13 @@ import ru.clevertec.news.service.CommentService;
 public class CommentController {
     private final CommentService commentService;
 
+    /**
+     * Предоставляет заданный комментарий для новости
+     *
+     * @param newsId    id новости
+     * @param commentId id комментария
+     * @return комментарий
+     */
     @Operation(summary = "Get comment", tags = "comments")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
@@ -44,6 +54,14 @@ public class CommentController {
         return commentService.get(newsId, commentId);
     }
 
+    /**
+     * Предоставляет страницу комментариев для новости по заданным параметрам (pageable, searchText)
+     *
+     * @param newsId     id новости
+     * @param pageable   информация об пагинации
+     * @param searchText искомый текст
+     * @return страница комментариев
+     */
     @Operation(summary = "Get all comments for news", tags = "comments")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
@@ -58,6 +76,13 @@ public class CommentController {
         return commentService.get(newsId, pageable, searchText);
     }
 
+    /**
+     * Создает комментарий для заданной новости
+     *
+     * @param newsId        id новости
+     * @param createComment информация о создании комментария
+     * @return комментарий
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Create comment", tags = "comments")
     @ApiResponses(value = {
@@ -77,6 +102,14 @@ public class CommentController {
         return commentService.create(newsId, createComment);
     }
 
+    /**
+     * Обновляет заданный комментарий для новости
+     *
+     * @param newsId        id новости
+     * @param commentId     id комментария
+     * @param updateComment обновляемая информация
+     * @return комментарий
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Update comment", tags = "comments")
     @ApiResponses(value = {
@@ -97,6 +130,12 @@ public class CommentController {
         return commentService.update(newsId, commentId, updateComment);
     }
 
+    /**
+     * Удаляет заданный комментарий для новости
+     *
+     * @param newsId    id новости
+     * @param commentId id комментария
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Delete comment", tags = "comments")
     @ApiResponses(value = {

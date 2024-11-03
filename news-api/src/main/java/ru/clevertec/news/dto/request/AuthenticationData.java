@@ -3,12 +3,20 @@ package ru.clevertec.news.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
+/**
+ * DTO данных аутентификации
+ */
 @Data
 @NotNull(message = "AuthenticationData must not be null")
 public class AuthenticationData {
+    /**
+     * Имя пользователя
+     */
     @NotBlank(message = "Username must not be blank")
     private String username;
+    /**
+     * Пароль
+     */
     @NotBlank(message = "Password must not be blank")
     private String password;
 }

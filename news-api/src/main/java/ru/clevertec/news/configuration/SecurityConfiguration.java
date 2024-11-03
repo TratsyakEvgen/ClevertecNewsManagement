@@ -17,8 +17,19 @@ import ru.clevertec.news.service.security.SecurityService;
 
 import javax.crypto.SecretKey;
 
+/**
+ * Конфигурация безопасности
+ */
 @Configuration
 public class SecurityConfiguration {
+
+    /**
+     * Конфигурация фильтров Spring Security
+     *
+     * @param decoder                jtw декодер
+     * @param newsSecurityService    сервис авторизации новостей
+     * @param commentSecurityService сервис авторизации новостей
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            JwtDecoder decoder,
@@ -41,6 +52,10 @@ public class SecurityConfiguration {
                 .build();
     }
 
+    /**
+     * Конвертер, добавляющий префикс ROLE_ к значениям переданным в scope jwt токена
+     * @return конвертер jwt токенов
+     */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -51,6 +66,12 @@ public class SecurityConfiguration {
     }
 
 
+    /**
+     * Конфигурация декодера JWT токенов доступа
+     *
+     * @param secretKeyGenerator генератор секретных ключей
+     * @return jwt декодер
+     */
     @Bean
     public JwtDecoder jwtDecoder(SecretKeyGenerator secretKeyGenerator) {
         SecretKey secretKey = secretKeyGenerator.generate();

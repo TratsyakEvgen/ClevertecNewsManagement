@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.entity.News;
 
@@ -17,7 +18,8 @@ public interface CacheableNewsService {
      * Удаляет новость из кэша
      *
      * @param news удаляемая новость
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и комментарий не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     * и комментарий не валидный
      */
     void evict(@Valid News news);
 
@@ -25,7 +27,8 @@ public interface CacheableNewsService {
      * Сохранение новости
      *
      * @param news сохраняемая новость
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и новость не валидная
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     * и новость не валидная
      */
     void save(@Valid News news);
 
@@ -35,7 +38,8 @@ public interface CacheableNewsService {
      * @param pageable   информация об пагинации
      * @param searchText искомый текст
      * @return страница новостей
-     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link org.springframework.validation.annotation.Validated}) и Pageable равен null или SearchText не валидный
+     * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
+     * и Pageable равен null или SearchText не валидный
      */
     @org.jetbrains.annotations.NotNull
     Page<News> findAll(@NotNull(message = "Pageable must be not null") Pageable pageable,

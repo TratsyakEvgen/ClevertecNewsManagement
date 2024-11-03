@@ -21,6 +21,9 @@ import ru.clevertec.news.dto.response.ResponseNewWithComments;
 import ru.clevertec.news.dto.response.ResponseNews;
 import ru.clevertec.news.service.NewsService;
 
+/**
+ * Контроллер новостей
+ */
 @ApiResponses(
         @ApiResponse(responseCode = "500", description = "Internal Server Error",
                 content = @Content(schema = @Schema(implementation = ResponseError.class)))
@@ -31,6 +34,13 @@ import ru.clevertec.news.service.NewsService;
 public class NewsController {
     private final NewsService newsService;
 
+    /**
+     * Предоставляет страницу новостей по заданным параметрам (pageable, searchText)
+     *
+     * @param pageable   информация об пагинации
+     * @param searchText искомый текст
+     * @return страница новостей
+     */
     @Operation(summary = "Get all news", tags = "news")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
@@ -42,6 +52,13 @@ public class NewsController {
         return newsService.get(pageable, searchText);
     }
 
+    /**
+     * Предоставляет новость со страницей комментариев
+     *
+     * @param id       id новости
+     * @param pageable информация об пагинации комментариев
+     * @return новость со страницей комментариев
+     */
     @Operation(summary = "Get news", tags = "news")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
@@ -54,6 +71,12 @@ public class NewsController {
         return newsService.get(id, pageable);
     }
 
+    /**
+     * Создание новости
+     *
+     * @param createNews информация о создании новости
+     * @return новость
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Create news", tags = "news")
     @ApiResponses(value = {
@@ -73,6 +96,13 @@ public class NewsController {
         return newsService.create(createNews);
     }
 
+    /**
+     * Обновление новости
+     *
+     * @param updateNews информация об обновлении новости
+     * @param id         id новости
+     * @return новость
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Update news", tags = "news")
     @ApiResponses(value = {
@@ -93,6 +123,11 @@ public class NewsController {
         return newsService.update(updateNews, id);
     }
 
+    /**
+     * Удаление новости
+     *
+     * @param id id новости
+     */
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Delete news", tags = "news")
     @ApiResponses(value = {
