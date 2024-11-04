@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.clevertec.exception.handler.starter.dto.ResponseError;
 import ru.clevertec.exception.handler.starter.exception.EntityAlreadyExistsException;
 import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
@@ -53,7 +54,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseError handleNotFoundException(HttpServletRequest request, EntityNotFoundException e) {
+    public ResponseError handleEntityNotFoundException(HttpServletRequest request, EntityNotFoundException e) {
         log.warn("Not found entity", e);
         return new ResponseError().setStatus(HttpStatus.NOT_FOUND.value())
                 .setError(e.getMessage())
@@ -89,13 +90,27 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обработчик {@link FeignException}
+     * Обработчик {@link NoResourceFoundException}
+     *
+     * @return DTO ошибки
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleNoResourceFoundException(HttpServletRequest request, NoResourceFoundException e) {
+        log.warn("Incorrect path", e);
+        return new ResponseError().setStatus(HttpStatus.BAD_REQUEST.value())
+                .setError(e.getMessage())
+                .setPath(request.getRequestURI());
+    }
+
+    /**
+     * Обработчик {@link FeignException.NotFound}
      *
      * @return DTO ошибки
      */
     @ExceptionHandler(FeignException.NotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseError handleFeignException(HttpServletRequest request, FeignException.NotFound e) throws JsonProcessingException {
+    public ResponseError handleFeignExceptionNotFound(HttpServletRequest request, FeignException.NotFound e) throws JsonProcessingException {
         log.warn("Incorrect path", e);
         ResponseError feignResponseError = objectMapper.readValue(e.contentUTF8(), ResponseError.class);
         return new ResponseError().setStatus(HttpStatus.NOT_FOUND.value())

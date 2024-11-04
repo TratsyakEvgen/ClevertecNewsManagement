@@ -54,6 +54,7 @@ public class SecurityConfiguration {
 
     /**
      * Конвертер, добавляющий префикс ROLE_ к значениям переданным в scope jwt токена
+     *
      * @return конвертер jwt токенов
      */
     @Bean

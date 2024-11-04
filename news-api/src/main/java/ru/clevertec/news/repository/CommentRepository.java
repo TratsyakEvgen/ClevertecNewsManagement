@@ -30,12 +30,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @return комментарий
      */
     Optional<Comment> findByNewsIdAndId(long newsId, long id);
+
     /**
      * Осуществляет постраничный полнотекстовый поиск комментариев.
      * SearchText должен быть не равен null,
      * но в случае searchText.text == null полнотекстовый поиск игнорируется
      *
-     * @param pageable информация о пагинации
+     * @param pageable   информация о пагинации
      * @param searchText искомый текст
      * @return страница новостей
      */

@@ -19,7 +19,7 @@ public interface CacheableNewsService {
      *
      * @param news удаляемая новость
      * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
-     * и комментарий не валидный
+     *                                      и комментарий не валидный
      */
     void evict(@Valid News news);
 
@@ -28,7 +28,7 @@ public interface CacheableNewsService {
      *
      * @param news сохраняемая новость
      * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
-     * и новость не валидная
+     *                                      и новость не валидная
      */
     void save(@Valid News news);
 
@@ -39,7 +39,7 @@ public interface CacheableNewsService {
      * @param searchText искомый текст
      * @return страница новостей
      * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
-     * и Pageable равен null или SearchText не валидный
+     *                                      и Pageable равен null или SearchText не валидный
      */
     @org.jetbrains.annotations.NotNull
     Page<News> findAll(@NotNull(message = "Pageable must be not null") Pageable pageable,

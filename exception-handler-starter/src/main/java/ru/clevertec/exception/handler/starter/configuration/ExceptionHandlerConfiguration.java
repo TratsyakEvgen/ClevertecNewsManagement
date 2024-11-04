@@ -11,7 +11,7 @@ import ru.clevertec.exception.handler.starter.advice.GlobalExceptionHandler;
  * Конфигурация стартера
  */
 @Configuration
-public class ApplicationConfiguration {
+public class ExceptionHandlerConfiguration {
 
     /**
      * @return конвертор json

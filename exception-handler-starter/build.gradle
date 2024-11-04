@@ -14,14 +14,15 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.github.openfeign:feign-core:13.2.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    compileOnly 'jakarta.servlet:jakarta.servlet-api'
     implementation 'jakarta.validation:jakarta.validation-api'
-    implementation 'org.springframework:spring-web'
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
-    testImplementation platform('org.junit:junit-bom:5.9.1')
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 

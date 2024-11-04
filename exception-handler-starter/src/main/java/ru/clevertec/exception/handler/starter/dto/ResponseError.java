@@ -1,7 +1,6 @@
 package ru.clevertec.exception.handler.starter.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
@@ -9,8 +8,7 @@ import java.time.LocalDateTime;
 /**
  * DTO ошибки
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 public class ResponseError {
     /**

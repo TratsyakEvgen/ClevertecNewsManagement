@@ -13,7 +13,6 @@ public abstract class AbstractAlgorithmCache implements Cache {
     protected final int capacity;
     private final String name;
 
-
     /**
      * @return имя кэша
      */

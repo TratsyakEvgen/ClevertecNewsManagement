@@ -2,7 +2,9 @@ package ru.clevertec.cache.manager;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
@@ -11,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Validated
 public class ConfigurationCacheManager {
     /**

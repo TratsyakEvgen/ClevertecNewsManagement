@@ -1,13 +1,15 @@
 package ru.clevertec.cache.cache;
 
+import lombok.Getter;
 import org.springframework.cache.support.SimpleValueWrapper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Реализация кэша с алгоритмом LRU
+ * Реализация кэша с алгоритмом LRU - при переполнении удаляется элемент с последним обращением
  */
+@Getter
 public class LRUCache extends AbstractAlgorithmCache {
     private final Map<Object, Object> cache;
 

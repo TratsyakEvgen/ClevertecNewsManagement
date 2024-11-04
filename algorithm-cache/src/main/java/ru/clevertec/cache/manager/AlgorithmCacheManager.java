@@ -1,5 +1,6 @@
 package ru.clevertec.cache.manager;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Кэш менеджер
  */
+@Getter
 @RequiredArgsConstructor
 public class AlgorithmCacheManager implements CacheManager {
     private final ConfigurationCacheManager config;

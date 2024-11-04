@@ -1,5 +1,6 @@
 package ru.clevertec.cache.cache;
 
+import lombok.Getter;
 import org.springframework.cache.support.SimpleValueWrapper;
 
 import java.util.HashMap;
@@ -7,8 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Реализация кэша с алгоритмом LFU
+ * Реализация кэша с алгоритмом LFU - при переполнении удаляется элемент с наименьшей частотой обращения.
+ * В данной реализации операция put так же является обращением к элементу.
  */
+@Getter
 public class LFUCache extends AbstractAlgorithmCache {
     private final Map<Object, Object> cache;
     private final Map<Object, Integer> frequencyKeyMap;
@@ -36,19 +39,19 @@ public class LFUCache extends AbstractAlgorithmCache {
     }
 
     /**
-     * Помещает в кэш объект, если данный объект существует, то инкриминируется частота обращения к кэшируемому объекту
+     * Помещает в кэш объект, если данный объект существует, то инкриминируется частота обращения к кэшируемому объекту.
+     * В случае переполнения кэша помещаемый объект вытесняет элемент с наименьшей частотой обращения.
      *
      * @param key   ключ, по которому будет осуществляться сохранение значения
      * @param value кэшируемое значение
      */
     @Override
     public synchronized void put(Object key, Object value) {
-        cache.put(key, value);
-        incrementFrequency(key);
-
-        if (cache.size() >= capacity) {
+        if (!cache.containsKey(key) && cache.size() == capacity) {
             removeMinUsedValue();
         }
+        cache.put(key, value);
+        incrementFrequency(key);
     }
 
     /**
