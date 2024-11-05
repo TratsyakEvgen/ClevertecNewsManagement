@@ -18,7 +18,6 @@ import ru.clevertec.news.mapper.CommentMapper;
 import ru.clevertec.news.service.CacheableCommentService;
 import ru.clevertec.news.service.CommentService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

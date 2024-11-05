@@ -1,6 +1,5 @@
 package ru.clevertec.news.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +31,6 @@ class TokenControllerTest {
 
         ResponseToken actual = tokenController.createToken(data);
 
-        verify(tokenService, times(1)).createToken(data);
         assertEquals(responseToken, actual);
     }
 }

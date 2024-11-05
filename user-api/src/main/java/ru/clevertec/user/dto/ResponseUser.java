@@ -1,12 +1,16 @@
 package ru.clevertec.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.clevertec.user.entity.RoleName;
 
 /**
  * DTO пользователя
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResponseUser {
     /**
      * Имя пользователя

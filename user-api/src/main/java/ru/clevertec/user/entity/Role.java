@@ -3,6 +3,7 @@ package ru.clevertec.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * Сущность ролей
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Table(name = "roles")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class Role {
     /**
      * Идентификатор роли

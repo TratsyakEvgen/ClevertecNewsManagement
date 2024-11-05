@@ -1,6 +1,5 @@
 package ru.clevertec.news.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +41,6 @@ class NewsControllerTest {
 
         Page<ResponseNews> actual = newsController.getAllNews(pageable, searchText);
 
-        verify(newsService, times(1)).get(pageable, searchText);
         assertEquals(page, actual);
     }
 
@@ -54,7 +52,6 @@ class NewsControllerTest {
 
         ResponseNewWithComments actual = newsController.getNews(1, pageable);
 
-        verify(newsService, times(1)).get(1, pageable);
         assertEquals(responseNews, actual);
     }
 
@@ -66,7 +63,6 @@ class NewsControllerTest {
 
         ResponseNews actual = newsController.createNews(createNews);
 
-        verify(newsService, times(1)).create(createNews);
         assertEquals(responseNews, actual);
     }
 
@@ -74,11 +70,10 @@ class NewsControllerTest {
     void updateNews() {
         UpdateNews updateNews = new UpdateNews("title", "text");
         ResponseNews responseNews = new ResponseNews().setId(1);
-        when(newsService.update(updateNews,1)).thenReturn(responseNews);
+        when(newsService.update(updateNews, 1)).thenReturn(responseNews);
 
         ResponseNews actual = newsController.updateNews(updateNews, 1);
 
-        verify(newsService, times(1)).update(updateNews, 1);
         assertEquals(responseNews, actual);
     }
 

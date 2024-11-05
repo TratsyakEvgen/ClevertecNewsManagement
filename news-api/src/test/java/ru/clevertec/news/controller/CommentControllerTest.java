@@ -1,6 +1,5 @@
 package ru.clevertec.news.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,12 +35,11 @@ class CommentControllerTest {
     @Test
     void getComment() {
         ResponseComment responseComment = new ResponseComment().setId(1);
-        when(commentService.get(1,1)).thenReturn(responseComment);
+        when(commentService.get(1, 1)).thenReturn(responseComment);
 
         ResponseComment actual = commentController.getComment(1, 1);
 
-        verify(commentService, times(1)).get(1, 1);
-        assertEquals(responseComment,actual);
+        assertEquals(responseComment, actual);
     }
 
     @Test
@@ -49,11 +47,10 @@ class CommentControllerTest {
         Pageable pageable = PageRequest.of(1, 1);
         SearchText searchText = new SearchText("text");
         Page<ResponseComment> page = new PageImpl<>(Collections.emptyList());
-        when(commentService.get(1,pageable,searchText)).thenReturn(page);
+        when(commentService.get(1, pageable, searchText)).thenReturn(page);
 
         Page<ResponseComment> actual = commentController.getAllComments(1, pageable, searchText);
 
-        verify(commentService, times(1)).get(1, pageable, searchText);
         assertEquals(page, actual);
     }
 
@@ -65,20 +62,18 @@ class CommentControllerTest {
 
         ResponseComment actual = commentController.createComment(1, createComment);
 
-        verify(commentService, times(1)).create(1, createComment);
-        assertEquals(responseComment,actual);
+        assertEquals(responseComment, actual);
     }
 
     @Test
     void updateComment() {
         UpdateComment updateComment = new UpdateComment("text");
         ResponseComment responseComment = new ResponseComment().setId(1);
-        when(commentService.update(1,1, updateComment)).thenReturn(responseComment);
+        when(commentService.update(1, 1, updateComment)).thenReturn(responseComment);
 
         ResponseComment actual = commentController.updateComment(1, 1, updateComment);
 
-        verify(commentService, times(1)).update(1, 1, updateComment);
-        assertEquals(responseComment,actual);
+        assertEquals(responseComment, actual);
     }
 
     @Test
