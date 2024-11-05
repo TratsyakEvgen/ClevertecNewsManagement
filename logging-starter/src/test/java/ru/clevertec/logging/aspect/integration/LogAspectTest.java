@@ -1,6 +1,5 @@
 package ru.clevertec.logging.aspect.integration;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +8,8 @@ import ru.clevertec.logging.aspect.integration.configuration.TestLoggingStarterC
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = TestLoggingStarterConfiguration.class)
@@ -27,8 +28,8 @@ class LogAspectTest {
         System.setOut(originalSystemOut);
         String logOutput = byteArrayOutputStream.toString();
 
-        Assertions.assertTrue(logOutput.contains(">> sum() - [1, 2]"));
-        Assertions.assertTrue(logOutput.contains("<< sum() - 3"));
+        assertTrue(logOutput.contains(">> sum() - [1, 2]"));
+        assertTrue(logOutput.contains("<< sum() - 3"));
 
     }
 

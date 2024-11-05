@@ -24,7 +24,7 @@ import ru.clevertec.news.service.CommentService;
  * Контроллер новостей
  */
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "400", description = "Incorrect path",
+        @ApiResponse(responseCode = "400", description = "Incorrect request",
                 content = @Content(schema = @Schema(implementation = ResponseError.class))),
         @ApiResponse(responseCode = "500", description = "Internal Server Error",
                 content = @Content(schema = @Schema(implementation = ResponseError.class)))

@@ -4,6 +4,7 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import ru.clevertec.news.service.security.exception.SecurityServiceException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,9 @@ public abstract class AbstractSecurityService implements SecurityService {
      */
     @Override
     public AuthorizationDecision getDecision(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext context) {
+        if (authenticationSupplier == null || context == null) {
+            throw new SecurityServiceException("Parameters must not be null");
+        }
         Authentication authentication = authenticationSupplier.get();
         Set<String> strings = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         boolean granted = strings.stream()

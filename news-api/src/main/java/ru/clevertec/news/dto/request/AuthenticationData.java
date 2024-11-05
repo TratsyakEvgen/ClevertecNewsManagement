@@ -2,12 +2,16 @@ package ru.clevertec.news.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * DTO данных аутентификации
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @NotNull(message = "AuthenticationData must not be null")
 public class AuthenticationData {
     /**

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "comments")
 @NotNull(message = "Comment must not be null")
+@Accessors(chain = true)
 public class Comment implements Serializable {
     /**
      * Идентификатор комментария

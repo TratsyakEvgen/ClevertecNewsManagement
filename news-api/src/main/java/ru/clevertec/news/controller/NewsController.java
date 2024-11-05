@@ -81,7 +81,7 @@ public class NewsController {
     @Operation(summary = "Create news", tags = "news")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Incorrect path",
+            @ApiResponse(responseCode = "400", description = "Incorrect request",
                     content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -107,7 +107,7 @@ public class NewsController {
     @Operation(summary = "Update news", tags = "news")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Incorrect path",
+            @ApiResponse(responseCode = "400", description = "Incorrect request",
                     content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -132,7 +132,7 @@ public class NewsController {
     @Operation(summary = "Delete news", tags = "news")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Incorrect path",
+            @ApiResponse(responseCode = "400", description = "Incorrect request",
                     content = @Content(schema = @Schema(implementation = ResponseError.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),

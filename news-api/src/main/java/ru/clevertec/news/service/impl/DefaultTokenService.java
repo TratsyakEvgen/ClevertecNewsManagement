@@ -1,7 +1,7 @@
 package ru.clevertec.news.service.impl;
 
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,13 +19,20 @@ import java.util.Date;
  * Сервис управления токенами доступа
  */
 @Service
-@RequiredArgsConstructor
 @Validated
+@Setter
 public class DefaultTokenService implements TokenService {
     private final SecretKeyGenerator secretKeyGenerator;
     private final UserClient userClient;
-    @Value(value = "jwt.expiry-time")
-    private String expiryTime;
+    private final long expiryTime;
+
+    public DefaultTokenService(SecretKeyGenerator secretKeyGenerator,
+                               UserClient userClient,
+                               @Value(value = "${jwt.expiry-time}") long expiryTime) {
+        this.secretKeyGenerator = secretKeyGenerator;
+        this.userClient = userClient;
+        this.expiryTime = expiryTime;
+    }
 
     /**
      * Генерирует JWT токен на основании имени пользователя и роли полученной от userClient
@@ -39,7 +46,7 @@ public class DefaultTokenService implements TokenService {
         ResponseUser user = userClient.getUserInfo(username, authenticationData.getPassword());
 
         String token = Jwts.builder()
-                .expiration(new Date(System.currentTimeMillis() + Integer.parseInt(expiryTime)))
+                .expiration(new Date(System.currentTimeMillis() + expiryTime))
                 .signWith(secretKey)
                 .subject(username)
                 .claim("scope", user.getRoleName())

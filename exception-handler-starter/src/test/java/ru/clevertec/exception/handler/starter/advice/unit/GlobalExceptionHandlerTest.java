@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,17 +23,12 @@ import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GlobalExceptionHandlerTest {
     private static final String URI = "uri";
     private GlobalExceptionHandler handler;
-    @Mock
-    private ConstraintViolation<Object> constraintViolation;
-    @Mock
-    private MethodArgumentTypeMismatchException methodArgumentTypeMismatchException;
-    @Mock
-    private FeignException.NotFound feignExceptionNotFound;
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
@@ -47,9 +41,10 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleConstraintViolationException() {
-        ConstraintViolationException exception = new ConstraintViolationException(Set.of(constraintViolation));
-        Mockito.when(constraintViolation.getMessage()).thenReturn("Error validation");
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        ConstraintViolation<?> mockConstraintViolation = mock(ConstraintViolation.class);
+        ConstraintViolationException exception = new ConstraintViolationException(Set.of(mockConstraintViolation));
+        when(mockConstraintViolation.getMessage()).thenReturn("Error validation");
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value())
                 .setError("Error validation")
@@ -65,7 +60,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleEntityNotFoundException() {
         EntityNotFoundException exception = new EntityNotFoundException("some");
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.NOT_FOUND.value())
                 .setError(exception.getMessage())
@@ -81,7 +76,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleEntityAlreadyExistsException() {
         EntityAlreadyExistsException exception = new EntityAlreadyExistsException("some");
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.BAD_REQUEST.value())
                 .setError(exception.getMessage())
@@ -96,8 +91,9 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleMethodArgumentTypeMismatchException() {
-        Mockito.when(methodArgumentTypeMismatchException.getMessage()).thenReturn("some");
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        MethodArgumentTypeMismatchException mockMethodArgumentTypeMismatchException = mock(MethodArgumentTypeMismatchException.class);
+        when(mockMethodArgumentTypeMismatchException.getMessage()).thenReturn("some");
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.BAD_REQUEST.value())
                 .setError("some")
@@ -105,7 +101,7 @@ class GlobalExceptionHandlerTest {
 
         ResponseError responseError = handler.handleMethodArgumentTypeMismatchException(
                 httpServletRequest,
-                methodArgumentTypeMismatchException
+                mockMethodArgumentTypeMismatchException
         );
 
         assertEquals(expected.getPath(), responseError.getPath());
@@ -115,7 +111,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleNoResourceFoundException() {
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.BAD_REQUEST.value())
                 .setError("No static resource some.")
@@ -133,16 +129,17 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleFeignExceptionNotFound() throws JsonProcessingException {
-        Mockito.when(feignExceptionNotFound.contentUTF8()).thenReturn("some");
-        Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(ResponseError.class)))
+        FeignException.NotFound mockFeignExceptionNotFound = mock(FeignException.NotFound.class);
+        when(mockFeignExceptionNotFound.contentUTF8()).thenReturn("some");
+        when(objectMapper.readValue(anyString(), eq(ResponseError.class)))
                 .thenReturn(new ResponseError().setError("some"));
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.NOT_FOUND.value())
                 .setError("some")
                 .setPath(URI);
 
-        ResponseError responseError = handler.handleFeignExceptionNotFound(httpServletRequest, feignExceptionNotFound);
+        ResponseError responseError = handler.handleFeignExceptionNotFound(httpServletRequest, mockFeignExceptionNotFound);
 
         assertEquals(expected.getPath(), responseError.getPath());
         assertEquals(expected.getError(), responseError.getError());
@@ -152,7 +149,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleUnknownException() {
         NullPointerException exception = new NullPointerException("some");
-        Mockito.when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())

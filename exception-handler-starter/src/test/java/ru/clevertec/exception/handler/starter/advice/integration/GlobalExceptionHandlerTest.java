@@ -4,8 +4,6 @@ import feign.FeignException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,6 +14,7 @@ import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 
 import java.util.Set;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,17 +24,13 @@ class GlobalExceptionHandlerTest {
     private MockMvc mockMvc;
     @MockBean
     private TestService testService;
-    @Mock
-    private ConstraintViolation<Object> constraintViolation;
-    @Mock
-    private FeignException.NotFound feignExceptionNotFound;
 
     @Test
     void handleConstraintViolationException() throws Exception {
-        Mockito.doThrow(new ConstraintViolationException(Set.of(constraintViolation)))
-                .when(testService)
-                .doSome();
-        Mockito.when(constraintViolation.getMessage()).thenReturn("Error validation");
+        ConstraintViolation<?> mockConstraintViolation = mock(ConstraintViolation.class);
+        doThrow(new ConstraintViolationException(Set.of(mockConstraintViolation)))
+                .when(testService).doSome();
+        when(mockConstraintViolation.getMessage()).thenReturn("Error validation");
 
         mockMvc.perform(get("/test"))
                 .andExpect(status().isUnprocessableEntity())
@@ -49,9 +44,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleEntityNotFoundException() throws Exception {
-        Mockito.doThrow(new EntityNotFoundException("Entity not found"))
-                .when(testService)
-                .doSome();
+        doThrow(new EntityNotFoundException("Entity not found")).when(testService).doSome();
 
         mockMvc.perform(get("/test"))
                 .andExpect(status().isNotFound())
@@ -64,9 +57,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleEntityAlreadyExistsException() throws Exception {
-        Mockito.doThrow(new EntityAlreadyExistsException("Entity already exists"))
-                .when(testService)
-                .doSome();
+        doThrow(new EntityAlreadyExistsException("Entity already exists")).when(testService).doSome();
 
         mockMvc.perform(get("/test"))
                 .andExpect(status().isBadRequest())
@@ -101,11 +92,9 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleFeignExceptionNotFound() throws Exception {
-        Mockito.doThrow(feignExceptionNotFound)
-                .when(testService)
-                .doSome();
-        Mockito.when(feignExceptionNotFound.contentUTF8())
-                .thenReturn("{\"error\": \"some\"}");
+        FeignException.NotFound mockFeignExceptionNotFound = mock(FeignException.NotFound.class);
+        doThrow(mockFeignExceptionNotFound).when(testService).doSome();
+        when(mockFeignExceptionNotFound.contentUTF8()).thenReturn("{\"error\": \"some\"}");
 
         mockMvc.perform(get("/test"))
                 .andExpect(status().isNotFound())
@@ -118,9 +107,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleUnknownException() throws Exception {
-        Mockito.doThrow(new NullPointerException("some"))
-                .when(testService)
-                .doSome();
+        doThrow(new NullPointerException("some")).when(testService).doSome();
 
         mockMvc.perform(get("/test"))
                 .andExpect(status().isInternalServerError())

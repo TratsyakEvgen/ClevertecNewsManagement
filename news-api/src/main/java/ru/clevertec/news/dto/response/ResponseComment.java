@@ -1,6 +1,7 @@
 package ru.clevertec.news.dto.response;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
  * DTO комментария
  */
 @Data
+@Accessors(chain = true)
 public class ResponseComment {
     /**
      * Идентификатор комментария

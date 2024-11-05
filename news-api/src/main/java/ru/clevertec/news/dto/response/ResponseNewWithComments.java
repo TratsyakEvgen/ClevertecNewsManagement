@@ -1,6 +1,7 @@
 package ru.clevertec.news.dto.response;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * DTO новости со страницей комментариев
  */
 @Data
+@Accessors(chain = true)
 public class ResponseNewWithComments {
     /**
      * Идентификатор новости
