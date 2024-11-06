@@ -37,7 +37,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      * @throws ConstraintViolationException если комментарий не валидный
      */
     @Override
-    @CacheEvict(value = "comments", key = "#comment.id")
+    @CacheEvict(value = "comments", key = "{#comment.id, #comment.news.id}")
     public void evict(Comment comment) {
     }
 
@@ -50,7 +50,9 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     public void evict(List<Comment> comments) {
         Optional.ofNullable(cacheManager.getCache("comments"))
-                .ifPresent(cache -> comments.forEach(comment -> cache.evict(comment.getId())));
+                .ifPresent(cache -> comments.forEach(comment ->
+                        cache.evict(List.of(comment.getId(), comment.getNews().getId()))
+                ));
     }
 
     /**
@@ -60,7 +62,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      * @param commentId id комментария
      */
     @Override
-    @CacheEvict(value = "comments", key = "#commentId")
+    @CacheEvict(value = "comments", key = "{#commentId, #newsId}")
     public void delete(long newsId, long commentId) {
         commentRepository.deleteByNewsIdAndId(newsId, commentId);
     }
@@ -69,12 +71,13 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      * Сохраняет комментарий в репозитории, а затем и в кэше по его id
      *
      * @param comment сохраняемый комментарий
+     * @return сохраненный комментарий
      * @throws ConstraintViolationException если включена валидация в имплементации (@Validation) и комментарий не валидный
      */
     @Override
-    @CachePut(value = "comments", key = "#comment.id")
-    public void save(Comment comment) {
-        commentRepository.save(comment);
+    @CachePut(value = "comments", key = "{#comment.id, #comment.news.id}")
+    public Comment save(Comment comment) {
+        return commentRepository.save(comment);
     }
 
     /**
@@ -86,7 +89,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      * @throws EntityNotFoundException если комментарий с commentId не найден в новости с newsId
      */
     @Override
-    @Cacheable(value = "comments", key = "#commentId")
+    @Cacheable(value = "comments", key = "{#commentId, #newsId}")
     public @NotNull Comment find(long newsId, long commentId) {
         return commentRepository.findByNewsIdAndId(newsId, commentId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -118,7 +121,9 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      */
     private void putContentInCache(Page<Comment> commentsPage) {
         Optional.ofNullable(cacheManager.getCache("comments"))
-                .ifPresent(cache -> commentsPage.forEach(comment -> cache.put(comment.getId(), comment)));
+                .ifPresent(cache -> commentsPage.forEach(comment ->
+                        cache.put(List.of(comment.getId(), comment.getNews().getId()), comment))
+                );
     }
 
 }

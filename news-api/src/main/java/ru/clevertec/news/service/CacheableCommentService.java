@@ -46,10 +46,11 @@ public interface CacheableCommentService {
      * Сохраняет комментарий
      *
      * @param comment сохраняемый комментарий
+     * @return сохраненный комментарий
      * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
      *                                      и комментарий не валидный
      */
-    void save(@Valid Comment comment);
+    Comment save(@Valid Comment comment);
 
     /**
      * Предоставляет комментарий

@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -97,9 +98,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseError handleNoResourceFoundException(HttpServletRequest request, NoResourceFoundException e) {
-        log.warn("Incorrect path", e);
+        log.warn("Bad request", e);
         return new ResponseError().setStatus(HttpStatus.BAD_REQUEST.value())
                 .setError(e.getMessage())
+                .setPath(request.getRequestURI());
+    }
+
+    /**
+     * Обработчик {@link HttpMessageNotReadableException}
+     *
+     * @return DTO ошибки
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException e) {
+        log.warn("Bad request", e);
+        return new ResponseError().setStatus(HttpStatus.BAD_REQUEST.value())
+                .setError(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .setPath(request.getRequestURI());
     }
 

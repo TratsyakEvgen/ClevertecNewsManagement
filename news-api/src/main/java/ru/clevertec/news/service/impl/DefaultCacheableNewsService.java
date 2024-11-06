@@ -44,12 +44,13 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
      * Сохраняет новость в репозитории, затем в кэше по id
      *
      * @param news сохраняемая новость
+     * @return сохраненная новость
      * @throws ConstraintViolationException если новость не валидная
      */
     @Override
     @CachePut(value = "news", key = "#news.id")
-    public void save(News news) {
-        newsRepository.save(news);
+    public News save(News news) {
+        return newsRepository.save(news);
     }
 
     /**

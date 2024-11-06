@@ -27,10 +27,11 @@ public interface CacheableNewsService {
      * Сохранение новости
      *
      * @param news сохраняемая новость
+     * @return сохраненная новость
      * @throws ConstraintViolationException если включена валидация в имплементации (присутствует {@link Validated}
      *                                      и новость не валидная
      */
-    void save(@Valid News news);
+    News save(@Valid News news);
 
     /**
      * Предоставляет страницу новостей заданным параметрам (pageable, searchText)

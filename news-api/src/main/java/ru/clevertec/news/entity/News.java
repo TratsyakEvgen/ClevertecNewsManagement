@@ -27,7 +27,6 @@ public class News implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "news_id")
-    @Min(value = 1, message = "Id must not be less than 1")
     private long id;
     /**
      * Имя пользователя (автора)

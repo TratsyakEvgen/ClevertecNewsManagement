@@ -12,8 +12,10 @@ import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.dto.request.UpdateComment;
 import ru.clevertec.news.dto.response.ResponseComment;
 import ru.clevertec.news.entity.Comment;
+import ru.clevertec.news.entity.News;
 import ru.clevertec.news.mapper.CommentMapper;
 import ru.clevertec.news.service.CacheableCommentService;
+import ru.clevertec.news.service.CacheableNewsService;
 import ru.clevertec.news.service.CommentService;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 @Validated
 public class DefaultCommentService implements CommentService {
     private final CacheableCommentService cacheableCommentService;
+    private final CacheableNewsService cacheableNewsService;
     private final CommentMapper commentMapper;
 
     /**
@@ -74,6 +77,8 @@ public class DefaultCommentService implements CommentService {
     public ResponseComment create(long newsId, CreateComment createComment) {
         Comment comment = commentMapper.toComment(createComment);
         comment.setDate(LocalDateTime.now());
+        News news = cacheableNewsService.find(newsId);
+        comment.setNews(news);
         cacheableCommentService.save(comment);
         return commentMapper.toResponseComment(comment);
     }

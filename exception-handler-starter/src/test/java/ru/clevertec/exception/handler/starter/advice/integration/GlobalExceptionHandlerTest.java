@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = TestController.class)
@@ -88,6 +90,17 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.status").value("400"))
                 .andExpect(jsonPath("$.error").value("No static resource testsdfd."))
                 .andExpect(jsonPath("$.path").value("/testsdfd"));
+    }
+
+    @Test
+    void handleHttpMessageNotReadableException() throws Exception {
+        mockMvc.perform(post("/test"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value("400"))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.path").value("/test"));
     }
 
     @Test

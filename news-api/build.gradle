@@ -32,6 +32,7 @@ dependencies {
     implementation project(':exception-handler-starter')
     implementation project(':algorithm-cache')
     implementation project(':logging-starter')
+
     implementation "org.mapstruct:mapstruct:1.6.2"
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
@@ -51,11 +52,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'com.maciejwalkowiak.spring:wiremock-spring-boot:2.1.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 }
 
 dependencyManagement {

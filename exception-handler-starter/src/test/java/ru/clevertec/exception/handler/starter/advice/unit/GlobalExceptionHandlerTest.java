@@ -128,6 +128,21 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleHttpMessageNotReadableException() {
+        when(httpServletRequest.getRequestURI()).thenReturn(URI);
+        ResponseError expected = new ResponseError()
+                .setStatus(HttpStatus.BAD_REQUEST.value())
+                .setError(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .setPath(URI);
+
+        ResponseError responseError = handler.handleHttpMessageNotReadableException(httpServletRequest, null);
+
+        assertEquals(expected.getPath(), responseError.getPath());
+        assertEquals(expected.getError(), responseError.getError());
+        assertEquals(expected.getStatus(), responseError.getStatus());
+    }
+
+    @Test
     void handleFeignExceptionNotFound() throws JsonProcessingException {
         FeignException.NotFound mockFeignExceptionNotFound = mock(FeignException.NotFound.class);
         when(mockFeignExceptionNotFound.contentUTF8()).thenReturn("some");

@@ -1,0 +1,35 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test
+    username: postgres
+    password: Traktaryst
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: db\changelog\db.changelog-test.yaml
+  cloud:
+    openfeign:
+      client:
+        config:
+          userClient:
+            url: http://localhost:8081/users/
+cache:
+  algorithm: LFU
+  capacity: 100
+jwt:
+  expiry-time: 600000
+
+server:
+  port: 8080
+logging:
+  level:
+    org:
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug

@@ -11,7 +11,7 @@ import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 import ru.clevertec.user.dto.ResponseUser;
 import ru.clevertec.user.dto.request.CreateUser;
 import ru.clevertec.user.entity.Role;
-import ru.clevertec.user.entity.RoleName;
+import ru.clevertec.user.enums.RoleName;
 import ru.clevertec.user.entity.User;
 import ru.clevertec.user.mapper.UserMapper;
 import ru.clevertec.user.repository.RoleRepository;

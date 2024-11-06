@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.clevertec.user.entity.RoleName;
+import ru.clevertec.user.enums.RoleName;
 
 /**
  * DTO для создания пользователя

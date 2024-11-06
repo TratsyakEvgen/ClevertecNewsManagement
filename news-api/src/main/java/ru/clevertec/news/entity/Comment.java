@@ -27,7 +27,6 @@ public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    @Min(value = 1, message = "Id must not be less than 1")
     private long id;
     /**
      * Имя пользователя (автора)
