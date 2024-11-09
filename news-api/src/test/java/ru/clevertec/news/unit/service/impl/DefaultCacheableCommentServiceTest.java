@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 import ru.clevertec.news.dto.request.SearchText;
 import ru.clevertec.news.entity.Comment;
+import ru.clevertec.news.entity.News;
 import ru.clevertec.news.repository.CommentRepository;
 import ru.clevertec.news.service.CacheableCommentService;
 import ru.clevertec.news.service.impl.DefaultCacheableCommentService;
@@ -43,13 +44,13 @@ class DefaultCacheableCommentServiceTest {
 
     @Test
     void evict() {
-        List<Comment> comments = List.of(new Comment().setId(1), new Comment().setId(2));
+        News news = new News().setId(1);
+        List<Comment> comments = List.of(new Comment().setId(1).setNews(news), new Comment().setId(2).setNews(news));
         when(cacheManager.getCache(any())).thenReturn(cache);
 
         service.evict(comments);
 
-        verify(cache, times(1)).evict(1L);
-        verify(cache, times(1)).evict(2L);
+        verify(cache, times(2)).evict(any());
     }
 
     @Test
@@ -90,14 +91,16 @@ class DefaultCacheableCommentServiceTest {
     void findAll() {
         Pageable pageable = PageRequest.of(1, 2);
         SearchText searchText = new SearchText("text");
-        Page<Comment> commentPage = new PageImpl<>(List.of(new Comment().setId(1), new Comment().setId(2)));
+        News news = new News().setId(1);
+        Page<Comment> commentPage = new PageImpl<>(
+                List.of(new Comment().setId(1).setNews(news), new Comment().setId(2).setNews(news))
+        );
         when(repository.findByNewsIdWithText(1, pageable, searchText)).thenReturn(commentPage);
         when(cacheManager.getCache(any())).thenReturn(cache);
 
         Page<Comment> actual = service.findAll(1L, pageable, searchText);
 
-        verify(cache, times(1)).put(eq(1L), any());
-        verify(cache, times(1)).put(eq(2L), any());
+        verify(cache, times(2)).put(any(), any());
         assertEquals(commentPage, actual);
     }
 

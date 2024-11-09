@@ -15,6 +15,7 @@ import ru.clevertec.news.service.TokenService;
 import ru.clevertec.news.service.UserClient;
 import ru.clevertec.news.service.impl.DefaultTokenService;
 import ru.clevertec.news.service.security.SecretKeyGenerator;
+import ru.clevertec.news.util.JwtUtil;
 
 import javax.crypto.SecretKey;
 
@@ -43,12 +44,8 @@ class DefaultTokenServiceTest {
 
         ResponseToken responseToken = tokenService.createToken(data);
 
-        Claims payload = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(responseToken.getToken())
-                .getPayload();
-        Assertions.assertEquals("user", payload.get("sub"));
-        Assertions.assertEquals("ADMIN", payload.get("scope"));
+        Claims climes = JwtUtil.getClimes(secretKey, responseToken);
+        Assertions.assertEquals("user", climes.get("sub"));
+        Assertions.assertEquals("ADMIN", climes.get("scope"));
     }
 }

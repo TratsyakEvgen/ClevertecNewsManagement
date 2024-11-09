@@ -13,9 +13,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
-  data:
-    redis:
-      port: 6379
   cloud:
     openfeign:
       client:
@@ -27,15 +24,5 @@ springdoc:
   override-with-generic-response: false
 server:
   port: 8080
-logging:
-  level:
-    org:
-      springframework:
-        transaction: debug
-        orm:
-          jpa: debug
-cache:
-  algorithm: LFU
-  capacity: 100
 jwt:
   expiry-time: 600000

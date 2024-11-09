@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 import ru.clevertec.news.entity.News;
 import ru.clevertec.news.service.CacheableNewsService;
 import ru.clevertec.news.service.security.SecurityService;
@@ -65,13 +67,23 @@ class NewsSecurityServiceTest {
     }
 
     @Test
+    void getDecision_ifNewsNotFound() {
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_JOURNALIST"))).when(authentication).getAuthorities();
+        Map<String, String> variables = Map.of("newsId", "21");
+        when(context.getVariables()).thenReturn(variables);
+        when(cacheableNewsService.find(21)).thenThrow(EntityNotFoundException.class);
+
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
+    }
+
+    @Test
     void getDecision_ifNotNewsIdInPath() {
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_JOURNALIST"))).when(authentication).getAuthorities();
         Map<String, String> variables = Map.of();
         when(context.getVariables()).thenReturn(variables);
         when(context.getRequest()).thenReturn(httpServletRequest);
 
-        assertThrows(SecurityServiceException.class, () -> service.getDecision(() -> authentication, context));
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
     }
 
     @Test

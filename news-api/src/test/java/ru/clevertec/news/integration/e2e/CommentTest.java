@@ -1,6 +1,7 @@
-package ru.clevertec.news.integration;
+package ru.clevertec.news.integration.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,17 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.news.dto.request.CreateComment;
 import ru.clevertec.news.dto.request.UpdateComment;
+import ru.clevertec.news.integration.configuration.AlgorithmLFUCacheConfiguration;
 import ru.clevertec.news.integration.container.PostgresTestContainer;
-import ru.clevertec.news.integration.util.JwtUtil;
 import ru.clevertec.news.service.security.SecretKeyGenerator;
+import ru.clevertec.news.util.JwtUtil;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.allOf;
@@ -28,10 +32,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = AlgorithmLFUCacheConfiguration.class)
 @AutoConfigureMockMvc
 @ImportTestcontainers(PostgresTestContainer.class)
-//@EnableWireMock(@ConfigureWireMock(port = 8081, name = "users"))
 @Transactional
+@ActiveProfiles("test")
 class CommentTest {
     @Autowired
     private MockMvc mockMvc;
@@ -42,6 +47,27 @@ class CommentTest {
     @Autowired
     private CacheManager cacheManager;
 
+    static Stream<Arguments> getPageableRequest() {
+        return Stream.of(
+                Arguments.of("/news/1/comments", "0", "20"),
+                Arguments.of("/news/1/comments?page=1", "1", "20"),
+                Arguments.of("/news/1/comments?page=1&size=2", "1", "2"),
+                Arguments.of("/news/1/comments?&size=2", "0", "2")
+        );
+    }
+
+    static Stream<Arguments> getFullTextSearchRequest() {
+        return Stream.of(
+                Arguments.of("/news/1/comments", "user1", "1"),
+                Arguments.of("/news/2/comments", "user1", "1"),
+                Arguments.of("/news/1/comments", "need", "2")
+        );
+    }
+
+    @AfterEach
+    void clearCache() {
+        Objects.requireNonNull(cacheManager.getCache("comments")).clear();
+    }
 
     @Test
     void getComment() throws Exception {
@@ -89,7 +115,7 @@ class CommentTest {
     }
 
     @Test
-    void createComment_notAuthenticated() throws Exception {
+    void createComment_ifNtAuthenticated() throws Exception {
         CreateComment createComment = new CreateComment("user1", "text");
 
         mockMvc.perform(post("/news/1/comments")
@@ -99,9 +125,9 @@ class CommentTest {
     }
 
     @Test
-    void createComment_notAuthorizedRole() throws Exception {
+    void createComment_ifNotAuthorizedRole() throws Exception {
         CreateComment createComment = new CreateComment("user", "text");
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "JOURNALIST");
+        String token = JwtUtil.createToken(keyGenerator.generate(), "journalist", "JOURNALIST");
 
         mockMvc.perform(post("/news/1/comments")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -111,9 +137,9 @@ class CommentTest {
     }
 
     @Test
-    void createComment_adminRole() throws Exception {
+    void createComment_ifAdminRole() throws Exception {
         CreateComment createComment = new CreateComment("user", "text");
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "ADMIN");
+        String token = JwtUtil.createToken(keyGenerator.generate(), "admin", "ADMIN");
 
         mockMvc.perform(post("/news/1/comments")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -128,7 +154,7 @@ class CommentTest {
     }
 
     @Test
-    void createComment_subscriberRole() throws Exception {
+    void createComment_ifSubscriberRole() throws Exception {
         CreateComment createComment = new CreateComment("user", "text");
         String token = JwtUtil.createToken(keyGenerator.generate(), "user", "SUBSCRIBER");
 
@@ -146,7 +172,7 @@ class CommentTest {
 
     @Test
     void createComment_ifNotValidData() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "ADMIN");
+        String token = JwtUtil.createToken(keyGenerator.generate(), "admin", "ADMIN");
 
         mockMvc.perform(post("/news/1/comments")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -165,7 +191,7 @@ class CommentTest {
     }
 
     @Test
-    void updateComment_notAuthenticated() throws Exception {
+    void updateComment_ifNotAuthenticated() throws Exception {
         mockMvc.perform(patch("/news/1/comments/1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(new UpdateComment("text"))))
@@ -173,8 +199,8 @@ class CommentTest {
     }
 
     @Test
-    void updateComment_notAuthorizedRole() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "JOURNALIST");
+    void updateComment_ifNotAuthorizedRole() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "journalist", "JOURNALIST");
 
         mockMvc.perform(patch("/news/1/comments/1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -184,8 +210,8 @@ class CommentTest {
     }
 
     @Test
-    void updateComment_adminRole() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "ADMIN");
+    void updateComment_ifAdminRole() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "admin", "ADMIN");
 
         mockMvc.perform(patch("/news/1/comments/1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -197,13 +223,10 @@ class CommentTest {
                 .andExpect(jsonPath("$.date").exists())
                 .andExpect(jsonPath("$.text").value("text"))
                 .andExpect(jsonPath("$.newsId").value("1"));
-
-
     }
 
-
     @Test
-    void updateComment_subscriberRole() throws Exception {
+    void updateComment_ifCommentCreatedByThisUser() throws Exception {
         String token = JwtUtil.createToken(keyGenerator.generate(), "user1", "SUBSCRIBER");
 
         mockMvc.perform(patch("/news/1/comments/1")
@@ -219,8 +242,19 @@ class CommentTest {
     }
 
     @Test
+    void updateComment_ifCommentNotCreatedByThisUser() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "user2", "SUBSCRIBER");
+
+        mockMvc.perform(patch("/news/1/comments/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new UpdateComment("text")))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void updateComment_ifNotValidData() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "ADMIN");
+        String token = JwtUtil.createToken(keyGenerator.generate(), "admin", "ADMIN");
 
         mockMvc.perform(patch("/news/1/comments/1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -238,14 +272,25 @@ class CommentTest {
     }
 
     @Test
-    void deleteComment_notAuthenticated() throws Exception {
+    void updateComment_ifCommentNotFound() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "user2", "SUBSCRIBER");
+
+        mockMvc.perform(patch("/news/2/comments/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(new UpdateComment("text")))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteComment_ifNotAuthenticated() throws Exception {
         mockMvc.perform(delete("/news/1/comments/1"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void deleteComment_notAuthorizedRole() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "JOURNALIST");
+    void deleteComment_ifNotAuthorizedRole() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "journalist", "JOURNALIST");
 
         mockMvc.perform(delete("/news/1/comments/1")
                         .header("Authorization", "Bearer " + token))
@@ -253,17 +298,16 @@ class CommentTest {
     }
 
     @Test
-    void deleteComment_adminRole() throws Exception {
-        String token = JwtUtil.createToken(keyGenerator.generate(), "user", "ADMIN");
+    void deleteComment_ifAdminRole() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "admin", "ADMIN");
 
         mockMvc.perform(delete("/news/1/comments/1")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
-
     @Test
-    void deleteComment_subscriberRole() throws Exception {
+    void deleteComment_ifCommentCreatedByThisUser() throws Exception {
         String token = JwtUtil.createToken(keyGenerator.generate(), "user1", "SUBSCRIBER");
 
         mockMvc.perform(delete("/news/1/comments/1")
@@ -271,24 +315,22 @@ class CommentTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void deleteComment_ifCommentNotCreatedByThisUser() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "user2", "SUBSCRIBER");
 
-    public static Stream<Arguments> getPageableRequest() {
-        return Stream.of(
-                Arguments.of("/news/1/comments", "0", "20"),
-                Arguments.of("/news/1/comments?page=1", "1", "20"),
-                Arguments.of("/news/1/comments?page=1&size=2", "1", "2"),
-                Arguments.of("/news/1/comments?&size=2", "0", "2")
-        );
+        mockMvc.perform(delete("/news/1/comments/1")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 
-    public static Stream<Arguments> getFullTextSearchRequest() {
-        return Stream.of(
-                Arguments.of("/news/1/comments", "user1", "1"),
-                Arguments.of("/news/2/comments", "user1", "1"),
-                Arguments.of("/news/4/comments", "ago", "1"),
-                Arguments.of("/news/5/comments", "american", "1")
-        );
-    }
+    @Test
+    void deleteComment_ifCommentNotFound() throws Exception {
+        String token = JwtUtil.createToken(keyGenerator.generate(), "user2", "SUBSCRIBER");
 
+        mockMvc.perform(delete("/news/2/comments/1")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
 
 }

@@ -1,6 +1,7 @@
 package ru.clevertec.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.user.dto.ResponseUser;
 import ru.clevertec.user.dto.request.CreateUser;
@@ -34,6 +35,7 @@ public class UserController {
      * @return созданный пользователь
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseUser create(@RequestBody CreateUser createUser) {
         return userService.create(createUser);
     }

@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import ru.clevertec.exception.handler.starter.exception.EntityNotFoundException;
 import ru.clevertec.news.entity.Comment;
 import ru.clevertec.news.service.CacheableCommentService;
 import ru.clevertec.news.service.security.SecurityService;
@@ -64,13 +66,32 @@ class CommentSecurityServiceTest {
     }
 
     @Test
+    void getDecision_ifCommentNotFound() {
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_SUBSCRIBER"))).when(authentication).getAuthorities();
+        Map<String, String> variables = Map.of("newsId", "2", "commentId", "1");
+        when(context.getVariables()).thenReturn(variables);
+        when(cacheableCommentService.find(2, 1)).thenThrow(EntityNotFoundException.class);
+
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
+    }
+
+    @Test
     void getDecision_ifNotNewsIdInPath() {
         doReturn(List.of(new SimpleGrantedAuthority("ROLE_SUBSCRIBER"))).when(authentication).getAuthorities();
         Map<String, String> variables = Map.of("commentId", "1");
         when(context.getVariables()).thenReturn(variables);
         when(context.getRequest()).thenReturn(httpServletRequest);
 
-        assertThrows(SecurityServiceException.class, () -> service.getDecision(() -> authentication, context));
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
+    }
+
+    @Test
+    void getDecision_ifNewsIdIsNotLong() {
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_SUBSCRIBER"))).when(authentication).getAuthorities();
+        Map<String, String> variables = Map.of("newsId", "ss");
+        when(context.getVariables()).thenReturn(variables);
+
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
     }
 
     @Test
@@ -80,7 +101,16 @@ class CommentSecurityServiceTest {
         when(context.getVariables()).thenReturn(variables);
         when(context.getRequest()).thenReturn(httpServletRequest);
 
-        assertThrows(SecurityServiceException.class, () -> service.getDecision(() -> authentication, context));
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
+    }
+
+    @Test
+    void getDecision_ifCommentIdIsNotLong() {
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_SUBSCRIBER"))).when(authentication).getAuthorities();
+        Map<String, String> variables = Map.of("newsId", "1", "commentId", "sss");
+        when(context.getVariables()).thenReturn(variables);
+
+        assertThrows(AccessDeniedException.class, () -> service.getDecision(() -> authentication, context));
     }
 
     @Test

@@ -26,17 +26,20 @@ public abstract class AbstractSecurityService implements SecurityService {
      * @param authenticationSupplier поставщик данных аутентификации
      * @param context                контекст запроса
      * @return решение об авторизации
+     * @throws SecurityServiceException если параметр null
      */
     @Override
     public AuthorizationDecision getDecision(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext context) {
         if (authenticationSupplier == null || context == null) {
             throw new SecurityServiceException("Parameters must not be null");
         }
+
         Authentication authentication = authenticationSupplier.get();
         Set<String> strings = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         boolean granted = strings.stream()
                 .filter(s -> roleDecisionMap.containsKey(s))
                 .anyMatch(s -> roleDecisionMap.get(s).test(authentication, context));
+
         return new AuthorizationDecision(granted);
     }
 

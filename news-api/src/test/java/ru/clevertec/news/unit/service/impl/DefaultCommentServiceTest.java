@@ -86,7 +86,7 @@ class DefaultCommentServiceTest {
         when(commentMapper.toComment(createComment)).thenReturn(comment);
         when(cacheableNewsService.find(1)).thenThrow(EntityNotFoundException.class);
 
-        assertThrows(EntityNotFoundException.class,() ->service.create(1, createComment) );
+        assertThrows(EntityNotFoundException.class, () -> service.create(1, createComment));
     }
 
     @Test

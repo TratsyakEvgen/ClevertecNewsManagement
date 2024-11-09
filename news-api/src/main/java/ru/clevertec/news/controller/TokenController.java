@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.exception.handler.starter.dto.ResponseError;
+import ru.clevertec.logging.annotation.Log;
 import ru.clevertec.news.dto.request.AuthenticationData;
 import ru.clevertec.news.dto.response.ResponseToken;
 import ru.clevertec.news.service.TokenService;
@@ -37,6 +38,7 @@ public class TokenController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ResponseError.class)))
     })
+    @Log
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseToken createToken(@RequestBody AuthenticationData authenticationData) {

@@ -15,10 +15,3 @@ spring:
     enabled: true
 server:
   port: 8081
-logging:
-  level:
-    org:
-      springframework:
-        transaction: debug
-        orm:
-          jpa: debug

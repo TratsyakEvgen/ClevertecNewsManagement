@@ -96,7 +96,7 @@ class GlobalExceptionHandlerTest {
         when(httpServletRequest.getRequestURI()).thenReturn(URI);
         ResponseError expected = new ResponseError()
                 .setStatus(HttpStatus.BAD_REQUEST.value())
-                .setError("some")
+                .setError(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .setPath(URI);
 
         ResponseError responseError = handler.handleMethodArgumentTypeMismatchException(

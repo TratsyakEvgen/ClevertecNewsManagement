@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.clevertec.user.dto.request.CreateUser;
 import ru.clevertec.user.enums.RoleName;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ImportTestcontainers(PostgresTestContainer.class)
+@ActiveProfiles("test")
 public class UserTest {
     @Autowired
     private MockMvc mockMvc;
@@ -86,7 +88,7 @@ public class UserTest {
                         .content(objectMapper.writeValueAsString(
                                 new CreateUser("user123", "password", RoleName.SUBSCRIBER)
                         )))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.username").value("user123"))
                 .andExpect(jsonPath("$.roleName").value("SUBSCRIBER"));
@@ -105,7 +107,8 @@ public class UserTest {
                 .andExpect(jsonPath("$.status").value("400"))
                 .andExpect(jsonPath("$.error")
                         .value("User with username user1 already exists"))
-                .andExpect(jsonPath("$.path").value("/users"));;
+                .andExpect(jsonPath("$.path").value("/users"));
+        ;
     }
 
 

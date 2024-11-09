@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import ru.clevertec.cache.manager.AlgorithmCacheManager;
 import ru.clevertec.cache.manager.ConfigurationCacheManager;
 
@@ -12,6 +13,7 @@ import ru.clevertec.cache.manager.ConfigurationCacheManager;
  * Конфигурация LFU/LRU кэша
  */
 @Configuration
+@Profile("prod")
 public class AlgorithmCacheConfiguration {
     /**
      * @return конфигурация кэш менеджера.

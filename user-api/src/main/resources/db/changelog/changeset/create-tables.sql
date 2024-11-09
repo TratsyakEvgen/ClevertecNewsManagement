@@ -15,6 +15,6 @@ CREATE TABLE roles
 ALTER TABLE users
     ADD CONSTRAINT fk_users_roles FOREIGN KEY (role_id) REFERENCES roles (role_id);
 
-CREATE INDEX users_username_idx ON users(username);
+CREATE INDEX users_username_idx ON users (username);
 
-CREATE INDEX roles_role_name_idx ON roles(role_name);
+CREATE INDEX roles_role_name_idx ON roles (role_name);

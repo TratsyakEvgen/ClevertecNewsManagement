@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/news/{newsId}").access(newsSecurityService::getDecision)
                         .requestMatchers(HttpMethod.POST, "/news/{newsId}/comments").hasAnyRole("ADMIN", "SUBSCRIBER")
                         .requestMatchers("/news/{newsId}/comments/{commentId}").access(commentSecurityService::getDecision)
+
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(decoder)))
                 .build();
