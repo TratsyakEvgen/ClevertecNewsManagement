@@ -1,3 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://news-api-db:5432/news
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  cloud:
+    openfeign:
+      client:
+        config:
+          userClient:
+            url: http://user-api:8081/users/
 cache:
   algorithm: LFU
   capacity: 100
