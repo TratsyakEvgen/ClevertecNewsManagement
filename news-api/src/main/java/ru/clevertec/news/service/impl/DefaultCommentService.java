@@ -2,6 +2,7 @@ package ru.clevertec.news.service.impl;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Transactional
 @Validated
+@Slf4j
 public class DefaultCommentService implements CommentService {
     private final CacheableCommentService cacheableCommentService;
     private final CacheableNewsService cacheableNewsService;
@@ -40,6 +42,7 @@ public class DefaultCommentService implements CommentService {
      */
     @Override
     public void delete(long newsId, long commentId) {
+        log.debug(String.format("CommentService: delete comment %d for news %d", commentId, newsId));
         cacheableCommentService.delete(newsId, commentId);
     }
 
@@ -58,11 +61,19 @@ public class DefaultCommentService implements CommentService {
      */
     @Override
     public ResponseComment update(long newsId, long commentId, UpdateComment updateComment) {
+        log.debug(String.format("CommentService: update comment %d for news %d, update %s", commentId, newsId, updateComment));
+
         Comment comment = cacheableCommentService.find(newsId, commentId);
         cacheableCommentService.evict(comment);
         commentMapper.partialUpdate(updateComment, comment);
         cacheableCommentService.save(comment);
-        return commentMapper.toResponseComment(comment);
+        ResponseComment responseComment = commentMapper.toResponseComment(comment);
+
+        log.debug(String.format(
+                "CommentService: update comment %d for news %d, update %s, result %s",
+                commentId, newsId, updateComment, responseComment
+        ));
+        return responseComment;
     }
 
     /**
@@ -75,12 +86,20 @@ public class DefaultCommentService implements CommentService {
      */
     @Override
     public ResponseComment create(long newsId, CreateComment createComment) {
+        log.debug(String.format("CommentService: create comment for news %d, update %s", newsId, createComment));
+
         Comment comment = commentMapper.toComment(createComment);
         comment.setDate(LocalDateTime.now());
         News news = cacheableNewsService.find(newsId);
         comment.setNews(news);
         cacheableCommentService.save(comment);
-        return commentMapper.toResponseComment(comment);
+        ResponseComment responseComment = commentMapper.toResponseComment(comment);
+
+        log.debug(String.format(
+                "CommentService: create comment for news %d, create %s, result %s",
+                newsId, createComment, responseComment
+        ));
+        return responseComment;
     }
 
     /**
@@ -92,8 +111,15 @@ public class DefaultCommentService implements CommentService {
      */
     @Override
     public ResponseComment get(long newsId, long commentId) {
+        log.debug(String.format("CommentService: get comment %d for news %d", commentId, newsId));
+
         Comment comment = cacheableCommentService.find(newsId, commentId);
-        return commentMapper.toResponseComment(comment);
+        ResponseComment responseComment = commentMapper.toResponseComment(comment);
+
+        log.debug(String.format(
+                "CommentService: get comment %d for news %d result %s", commentId, newsId, responseComment
+        ));
+        return responseComment;
     }
 
     /**
@@ -107,7 +133,17 @@ public class DefaultCommentService implements CommentService {
      */
     @Override
     public Page<ResponseComment> get(long newsId, Pageable pageable, SearchText searchText) {
+        log.debug(String.format(
+                "CommentService: get comment for news %d, pageable %s, searchText %s", newsId, pageable, searchText
+        ));
+
         Page<Comment> commentPage = cacheableCommentService.findAll(newsId, pageable, searchText);
-        return commentPage.map(commentMapper::toResponseComment);
+        Page<ResponseComment> responseCommentPage = commentPage.map(commentMapper::toResponseComment);
+
+        log.debug(String.format(
+                "CommentService: get comment for news %d, pageable %s, searchText %s, result %s",
+                newsId, pageable, searchText, responseCommentPage
+        ));
+        return responseCommentPage;
     }
 }

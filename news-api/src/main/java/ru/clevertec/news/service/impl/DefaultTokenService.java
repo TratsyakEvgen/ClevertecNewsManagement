@@ -2,6 +2,7 @@ package ru.clevertec.news.service.impl;
 
 import io.jsonwebtoken.Jwts;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +22,7 @@ import java.util.Date;
 @Service
 @Validated
 @Setter
+@Slf4j
 public class DefaultTokenService implements TokenService {
     private final SecretKeyGenerator secretKeyGenerator;
     private final UserClient userClient;
@@ -41,6 +43,8 @@ public class DefaultTokenService implements TokenService {
      */
     @Override
     public ResponseToken createToken(AuthenticationData authenticationData) {
+        log.debug("TokenService: create token " + authenticationData);
+
         SecretKey secretKey = secretKeyGenerator.generate();
         String username = authenticationData.getUsername();
         ResponseUser user = userClient.getUserInfo(username, authenticationData.getPassword());
@@ -51,6 +55,10 @@ public class DefaultTokenService implements TokenService {
                 .subject(username)
                 .claim("scope", user.getRoleName())
                 .compact();
-        return new ResponseToken(token);
+
+        ResponseToken responseToken = new ResponseToken(token);
+
+        log.debug(String.format("TokenService: create token %s, result %s", authenticationData, responseToken));
+        return responseToken;
     }
 }

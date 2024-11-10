@@ -2,6 +2,7 @@ package ru.clevertec.news.service.impl;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class DefaultCacheableCommentService implements CacheableCommentService {
     private final CommentRepository commentRepository;
     private final CacheManager cacheManager;
@@ -39,6 +41,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     @CacheEvict(value = "comments", key = "{#comment.id, #comment.news.id}")
     public void evict(Comment comment) {
+        log.debug("CacheableCommentService: evict comment " + comment);
     }
 
     /**
@@ -49,6 +52,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      */
     @Override
     public void evict(List<Comment> comments) {
+        log.debug("CacheableCommentService: evict comments " + comments);
         Optional.ofNullable(cacheManager.getCache("comments"))
                 .ifPresent(cache -> comments.forEach(comment ->
                         cache.evict(List.of(comment.getId(), comment.getNews().getId()))
@@ -64,6 +68,7 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     @CacheEvict(value = "comments", key = "{#commentId, #newsId}")
     public void delete(long newsId, long commentId) {
+        log.debug(String.format("CacheableCommentService: delete comment %d for news %d", commentId, newsId));
         commentRepository.deleteByNewsIdAndId(newsId, commentId);
     }
 
@@ -77,7 +82,10 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     @CachePut(value = "comments", key = "{#comment.id, #comment.news.id}")
     public Comment save(Comment comment) {
-        return commentRepository.save(comment);
+        log.debug("CacheableCommentService: save comment " + comment);
+        Comment saved = commentRepository.save(comment);
+        log.debug("CacheableCommentService: save comment result " + saved);
+        return saved;
     }
 
     /**
@@ -91,10 +99,15 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
     @Override
     @Cacheable(value = "comments", key = "{#commentId, #newsId}")
     public @NotNull Comment find(long newsId, long commentId) {
-        return commentRepository.findByNewsIdAndId(newsId, commentId)
+        log.debug(String.format("CacheableCommentService: find comment %d for news %d", commentId, newsId));
+        Comment comment = commentRepository.findByNewsIdAndId(newsId, commentId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Comment with id %d in news with id %d not found", commentId, newsId)
                 ));
+        log.debug(String.format(
+                "CacheableCommentService: find comment %d for news %d, result %s", commentId, newsId, comment
+        ));
+        return comment;
     }
 
     /**
@@ -109,8 +122,16 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      */
     @Override
     public @NotNull Page<Comment> findAll(long newsId, Pageable pageable, SearchText searchText) {
+        log.debug(String.format(
+                "CacheableCommentService: findAll newsId %d, pageable %s, searchText %s ",
+                newsId, pageable, searchText)
+        );
         Page<Comment> commentsPage = commentRepository.findByNewsIdWithText(newsId, pageable, searchText);
-        putContentInCache(commentsPage);
+        putContentToCache(commentsPage);
+        log.debug(String.format(
+                "CacheableCommentService: findAll newsId %d, pageable %s, searchText %s, result %s",
+                newsId, pageable, searchText, commentsPage)
+        );
         return commentsPage;
     }
 
@@ -119,7 +140,8 @@ public class DefaultCacheableCommentService implements CacheableCommentService {
      *
      * @param commentsPage страница комментариев
      */
-    private void putContentInCache(Page<Comment> commentsPage) {
+    private void putContentToCache(Page<Comment> commentsPage) {
+        log.debug("CacheableCommentService: put content comment page to cache " + commentsPage);
         Optional.ofNullable(cacheManager.getCache("comments"))
                 .ifPresent(cache -> commentsPage.forEach(comment ->
                         cache.put(List.of(comment.getId(), comment.getNews().getId()), comment))

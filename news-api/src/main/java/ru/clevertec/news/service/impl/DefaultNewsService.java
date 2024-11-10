@@ -2,6 +2,7 @@ package ru.clevertec.news.service.impl;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Validated
+@Slf4j
 public class DefaultNewsService implements NewsService {
     private final CacheableNewsService cacheableNewsService;
     private final CacheableCommentService cacheableCommentService;
@@ -46,10 +48,15 @@ public class DefaultNewsService implements NewsService {
      */
     @Override
     public ResponseNews create(CreateNews createNews) {
+        log.debug("NewsService: create news " + createNews);
+
         News news = newsMapper.toNews(createNews);
         news.setDate(LocalDateTime.now());
         cacheableNewsService.save(news);
-        return newsMapper.toResponseNews(news);
+        ResponseNews responseNews = newsMapper.toResponseNews(news);
+
+        log.debug(String.format("NewsService: create news %s, result %s", createNews, responseNews));
+        return responseNews;
     }
 
     /**
@@ -62,8 +69,15 @@ public class DefaultNewsService implements NewsService {
      */
     @Override
     public Page<ResponseNews> get(Pageable pageable, SearchText searchText) {
+        log.debug(String.format("NewsService: get news pageable %s, searchText %s", pageable, searchText));
+
         Page<News> newsPage = cacheableNewsService.findAll(pageable, searchText);
-        return newsPage.map(newsMapper::toResponseNews);
+        Page<ResponseNews> responseNewsPage = newsPage.map(newsMapper::toResponseNews);
+
+        log.debug(String.format(
+                "NewsService: get news pageable %s, searchText %s, result %s", pageable, searchText, responseNewsPage
+        ));
+        return responseNewsPage;
     }
 
     /**
@@ -80,11 +94,16 @@ public class DefaultNewsService implements NewsService {
      */
     @Override
     public ResponseNews update(UpdateNews updateNews, long id) {
+        log.debug(String.format("NewsService: update news %d, update %s", id, updateNews));
+
         News news = cacheableNewsService.find(id);
         cacheableNewsService.evict(news);
         newsMapper.partialUpdate(updateNews, news);
         cacheableNewsService.save(news);
-        return newsMapper.toResponseNews(news);
+        ResponseNews responseNews = newsMapper.toResponseNews(news);
+
+        log.debug(String.format("NewsService: update news %d, update %s, result %s", id, updateNews, responseNews));
+        return responseNews;
     }
 
     /**
@@ -94,6 +113,8 @@ public class DefaultNewsService implements NewsService {
      */
     @Override
     public void delete(long id) {
+        log.debug("NewsService: delete news " + id);
+
         List<Comment> comments = cacheableNewsService.find(id).getComments();
         cacheableNewsService.delete(id);
         cacheableCommentService.evict(comments);
@@ -109,10 +130,14 @@ public class DefaultNewsService implements NewsService {
      */
     @Override
     public ResponseNewWithComments get(long id, Pageable pageable) {
+        log.debug(String.format("NewsService: get news %d pageable %s", id, pageable));
+
         News news = cacheableNewsService.find(id);
         ResponseNewWithComments responseNewWithComments = newsMapper.toResponseNewWithComments(news);
         Page<ResponseComment> comments = commentService.get(id, pageable, new SearchText());
         responseNewWithComments.setComments(comments);
+
+        log.debug(String.format("NewsService: get news %d pageable %s, result %s", id, pageable, responseNewWithComments));
         return responseNewWithComments;
     }
 

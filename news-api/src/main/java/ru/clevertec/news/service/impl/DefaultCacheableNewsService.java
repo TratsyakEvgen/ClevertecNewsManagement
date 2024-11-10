@@ -2,6 +2,7 @@ package ru.clevertec.news.service.impl;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class DefaultCacheableNewsService implements CacheableNewsService {
     private final NewsRepository newsRepository;
     private final CacheManager cacheManager;
@@ -38,6 +40,7 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
     @Override
     @CacheEvict(value = "news", key = "#news.id")
     public void evict(News news) {
+        log.debug("CacheableNewsService: evict news " + news);
     }
 
     /**
@@ -50,7 +53,10 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
     @Override
     @CachePut(value = "news", key = "#news.id")
     public News save(News news) {
-        return newsRepository.save(news);
+        log.debug("CacheableNewsService: save news " + news);
+        News saved = newsRepository.save(news);
+        log.debug("CacheableNewsService: save news result " + saved);
+        return saved;
     }
 
     /**
@@ -63,8 +69,10 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
      */
     @Override
     public @NotNull Page<News> findAll(Pageable pageable, SearchText searchText) {
+        log.debug(String.format("CacheableNewsService: findAll pageable %s, searchText %s ", pageable, searchText));
         Page<News> newsPage = newsRepository.findAllWithText(pageable, searchText);
-        putContentInCache(newsPage);
+        putContentToCache(newsPage);
+        log.debug(String.format("CacheableNewsService: findAll pageable %s, searchText %s, result %s ", pageable, searchText, newsPage));
         return newsPage;
     }
 
@@ -78,8 +86,11 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
     @Override
     @Cacheable(value = "news", key = "#id")
     public @NotNull News find(long id) {
-        return newsRepository.findById(id)
+        log.debug("CacheableNewsService: find news " + id);
+        News news = newsRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("News with id " + id + " not found"));
+        log.debug(String.format("CacheableNewsService: find news %d, result %s", id, news));
+        return news;
     }
 
     /**
@@ -90,6 +101,7 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
     @Override
     @CacheEvict(value = "news", key = "#id")
     public void delete(long id) {
+        log.debug("CacheableNewsService: delete news " + id);
         newsRepository.deleteById(id);
     }
 
@@ -98,7 +110,8 @@ public class DefaultCacheableNewsService implements CacheableNewsService {
      *
      * @param newsPage страница новостей
      */
-    private void putContentInCache(Page<News> newsPage) {
+    private void putContentToCache(Page<News> newsPage) {
+        log.debug("CacheableCommentService: put content news page to cache " + newsPage);
         Optional.ofNullable(cacheManager.getCache("news"))
                 .ifPresent(cache -> newsPage.forEach(news -> cache.put(news.getId(), news)));
     }
