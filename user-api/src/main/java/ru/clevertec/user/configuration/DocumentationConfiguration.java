@@ -1,4 +1,4 @@
-package ru.clevertec.news.configuration;
+package ru.clevertec.user.configuration;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -11,12 +11,6 @@ import org.springframework.context.annotation.Configuration;
  * Конфигурация Springdoc
  */
 @Configuration
-@SecurityScheme(
-        name = "Bearer Authentication",
-        type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT",
-        scheme = "bearer"
-)
 public class DocumentationConfiguration {
 
     /**
@@ -26,7 +20,7 @@ public class DocumentationConfiguration {
     public OpenAPI titleOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("News API")
+                        .title("User API")
                         .version("0.0.1")
                 );
     }
