@@ -22,7 +22,7 @@ services:
       context: user-api
       dockerfile: Dockerfile
     container_name: user-api
-    restart: no
+    restart: unless-stopped
     depends_on:
       - user-api-db
     ports:
@@ -60,7 +60,7 @@ services:
       context: news-api
       dockerfile: Dockerfile
     container_name: news-api
-    restart: no
+    restart: unless-stopped
     depends_on:
       - news-api-db
     ports:
@@ -80,7 +80,7 @@ services:
       context: news-api
       dockerfile: Dockerfile
     container_name: news-api
-    restart: no
+    restart: unless-stopped
     depends_on:
       - news-api-db
     ports:
@@ -108,13 +108,9 @@ services:
 
 volumes:
   user-api-db-data:
-    external: false
   news-api-db-data:
-    external: false
   user-api-logs:
-    external: false
   news-api-logs:
-    external: false
 
 networks:
   docker-network-internal:
