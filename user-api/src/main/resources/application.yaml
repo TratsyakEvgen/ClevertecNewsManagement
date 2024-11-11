@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: users
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/users
+    username: postgres
+    password: Traktaryst
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+springdoc:
+  default-produces-media-type: application/json
+  override-with-generic-response: false
+server:
+  port: 8081
+logging:
+  level:
+    org.springframework: error
+    ru.clevertec: info
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-3level %logger{36} - %msg%n"
+  file:
+    name: /logs/user-api.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 10
+      file-name-pattern: /logs/user-api.%d{yyyy-MM-dd}.%i.log

@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test
+    username: postgres
+    password: Traktaryst
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: db\changelog\db.changelog-test.yaml
+
